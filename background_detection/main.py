@@ -10,6 +10,7 @@ class BackgroundRemover:
         background_color = hist.argmax(axis=0) 
         return background_color
 
+
     @staticmethod
     def getBackgroundSpot(self, img, background_color, spot_size=50):
         spot_template = np.zeros((spot_size,spot_size,3), np.uint8)
@@ -24,6 +25,7 @@ class BackgroundRemover:
         mn,_,location,_ = cv2.minMaxLoc(result)
         return location
 
+
     @staticmethod
     def generateBinaryBackgroundImage(self, img, background_color, threshold=7):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -31,6 +33,7 @@ class BackgroundRemover:
         ret,mask2 = cv2.threshold(gray,background_color + threshold,255,0)
         combined = cv2.bitwise_not(cv2.bitwise_or(mask1, mask1))
         return combined
+
 
     @staticmethod
     def separateBackground(self, binaryBackgroundImg, backgroundLocation):
@@ -43,8 +46,9 @@ class BackgroundRemover:
 
         return im_floodfill
 
+
     @staticmethod
-    def cropImageRectangles(self, binaryBackgroundImage, minArea=100000, maxImageDimensionRelation=2.5):
+    def cropImageRectangles(self, img, binaryBackgroundImage, minArea=100000, maxImageDimensionRelation=2.5):
         # initialize output images
         croppedImages = []
 
@@ -71,25 +75,28 @@ class BackgroundRemover:
             if(imageArea >= minArea and imageHeight/imageWidth < maxImageDimensionRelation and imageWidth/imageHeight < maxImageDimensionRelation): 
                 crop = img[corners[0][1]:corners[1][1],corners[0][0]:corners[1][0]]
                 croppedImages.append(crop)
-                cv2.imwrite('image-' + str(len(croppedImages)) + '.png',crop)
-                
 
         return croppedImages
 
-# Load an color image in grayscale
-inputImg = cv2.imread('../input/A1/21.tif')
 
+    @staticmethod
+    def getImagesWithoutBackground(self, inputImg):
+        kernel = np.ones((5,5),np.float32)/25
+        img = cv2.filter2D(inputImg,-1,kernel)
+
+        background_color = self.getPrimaryBackgroundColor(self,img)
+        backgroundLocation = self.getBackgroundSpot(self,img, background_color)
+        binaryImg = self.generateBinaryBackgroundImage(self,img, background_color)
+        binaryBackgroundImg = self.separateBackground(self,binaryImg, backgroundLocation)
+        croppedImages = self.cropImageRectangles(self,img, binaryBackgroundImg)
+
+        return croppedImages
+
+
+
+inputImg = cv2.imread('../input/A2/16.tif')
 # img = cv2.resize(inputImg, (0,0), fx=0.3, fy=0.3) 
-kernel = np.ones((5,5),np.float32)/25
-img = cv2.filter2D(inputImg,-1,kernel)
+croppedImages = BackgroundRemover.getImagesWithoutBackground(BackgroundRemover, inputImg)
 
-background_color = BackgroundRemover.getPrimaryBackgroundColor(None,img)
-
-backgroundLocation = BackgroundRemover.getBackgroundSpot(None,img, background_color)
-
-binaryImg = BackgroundRemover.generateBinaryBackgroundImage(None,img, background_color)
-
-binaryBackgroundImg = BackgroundRemover.separateBackground(None,binaryImg, backgroundLocation)
-
-croppedImages = BackgroundRemover.cropImageRectangles(None,binaryBackgroundImg)
-
+for i in range(len(croppedImages)):
+    cv2.imwrite('image-' + str(i) + '.png',croppedImages[i])
