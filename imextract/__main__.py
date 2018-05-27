@@ -1,20 +1,19 @@
 import sys
 import argparse
-import compare
 import cv2
 import numpy as np
+import compare
 
 
 def main(args=None):
 
     img = cv2.imread(args.image, cv2.IMREAD_COLOR)
 
-    cv2.imshow('image',img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
     if args.compare:
-        compareable = cv2.imread(args.compare, cv2.IMREAD_COLOR)
+        truth = cv2.imread(args.compare, cv2.IMREAD_COLOR)
+        imcomp = compare.ImageCompare(img, truth, 20)
+        print("Difference percentage of the size: {}".format(imcomp.compare_size()))
+        print("Difference percentage of the features: {}".format(imcomp.compare_feature()))
     else:
         print("This is the main routine.")
 
