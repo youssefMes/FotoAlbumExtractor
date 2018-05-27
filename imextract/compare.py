@@ -82,14 +82,18 @@ class ImageCompare:
             print("TrainIdx: {}".format(match.trainIdx) )
             print("===============================")
 
-            # uses image center to compare the feature position
-            img_x = abs( img_center[0] - img_kp[match.queryIdx].pt[0] )
-            img_y = abs( img_center[1] - img_kp[match.queryIdx].pt[1] )
+            if match.distance > 0.5:
+                # if the distance between the feature is too big
+                diffs[i] = 1.0
+            else:
+                # uses image center to compare the feature position
+                img_x = abs( img_center[0] - img_kp[match.queryIdx].pt[0] )
+                img_y = abs( img_center[1] - img_kp[match.queryIdx].pt[1] )
 
-            truth_x = abs( truth_center[0] - truth_kp[match.trainIdx].pt[0] )
-            truth_y = abs( truth_center[1] - truth_kp[match.trainIdx].pt[1] )
+                truth_x = abs( truth_center[0] - truth_kp[match.trainIdx].pt[0] )
+                truth_y = abs( truth_center[1] - truth_kp[match.trainIdx].pt[1] )
 
-            diffs[i]  = ( abs(truth_x - img_x) / truth_x ) + ( abs(truth_y - img_y) / truth_y )
+                diffs[i]  = ( abs(truth_x - img_x) / truth_x ) + ( abs(truth_y - img_y) / truth_y )
 
         self.__diff_feature = np.average(diffs) * 100
 
