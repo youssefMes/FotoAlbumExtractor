@@ -2,7 +2,8 @@ import sys
 import argparse
 import cv2
 import numpy as np
-import compare
+import compare as cp
+import backgroundremover as br
 
 
 def main(args=None):
@@ -11,12 +12,27 @@ def main(args=None):
 
     if args.compare:
         truth = cv2.imread(args.compare, cv2.IMREAD_COLOR)
-        imcomp = compare.ImageCompare(img, truth, 20)
-        print("Difference percentage of the size: {}".format(imcomp.compare_size()))
-        print("Difference percentage of the features: {}".format(imcomp.compare_feature()))
+        print("Difference percentage of the size: {}".format(cp.compare_size(truth, img)))
+        print("Difference percentage of the features: {}".format(cp.compare_feature(thruth, img, 20, 0.5)))
     else:
-        print("This is the main routine.")
+        if args.path:
+            br.processImage(img, args.path)
+        else:
+            br.processImage(img)
 
+
+def deleteFolderContent(folderpath):
+    if not os.path.exists(folderpath):
+        os.makedirs(folderpath)
+        return
+
+    for the_file in os.listdir(folderpath):
+        file_path = os.path.join(folderpath, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
 
 
 if __name__ == "__main__":
