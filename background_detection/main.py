@@ -1,6 +1,9 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import math
+import os
+import time
 
 class BackgroundRemover:
     @staticmethod
@@ -12,7 +15,7 @@ class BackgroundRemover:
 
 
     @staticmethod
-    def getBackgroundSpot(self, img, background_color, spot_size=50):
+    def getBackgroundSpot(self, img, background_color, spot_size=200):
         spot_template = np.zeros((spot_size,spot_size,3), np.uint8)
         spot_template[:,:,0] = background_color
         spot_template[:,:,1] = background_color
@@ -27,11 +30,11 @@ class BackgroundRemover:
 
 
     @staticmethod
-    def generateBinaryBackgroundImage(self, img, background_color, threshold=7):
+    def generateBinaryBackgroundImage(self, img, background_color, threshold=25):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         ret,mask1 = cv2.threshold(gray,background_color + threshold,255,0)
         ret,mask2 = cv2.threshold(gray,background_color + threshold,255,0)
-        combined = cv2.bitwise_not(cv2.bitwise_or(mask1, mask1))
+        combined = cv2.bitwise_not(cv2.bitwise_or(mask1, mask2))
         return combined
 
 
@@ -46,9 +49,41 @@ class BackgroundRemover:
 
         return im_floodfill
 
+    @staticmethod    
+    def generateBinaryExtendedEdgeImage(self, img):
+        # downsample for performance increase an noise reduction
+        # temp = img
+        temp = cv2.resize(img, (0,0), fx=0.45, fy=0.45)  
+        temp = cv2.bilateralFilter(temp,15,75,75)    
+        blur1 = cv2.GaussianBlur(temp,(3,3),0)
+        blur2 = cv2.GaussianBlur(temp,(15,15),0)
+        gradients = blur1 - blur2
+        # gradients = cv2.Laplacian(temp,cv2.CV_64F)
+        kernel = np.zeros((15,15),np.uint8)
+        kernel = cv2.circle(kernel, (7,7), 5, 1, -1)
+        gradients = cv2.morphologyEx(gradients, cv2.MORPH_CLOSE, kernel)
+        binaryedge = cv2.resize(gradients, (img.shape[1],img.shape[0]))         
+        cv2.imwrite('gradients.png',binaryedge)
+        return binaryedge
 
     @staticmethod
-    def cropImageRectangles(self, img, binaryBackgroundImage, minArea=100000, maxImageDimensionRelation=2.5):
+    def checkForFeatures(self, inputImg, threshold = 10):
+        blur1 = cv2.GaussianBlur(inputImg,(7,7),0)
+        blur2 = cv2.GaussianBlur(inputImg,(15,15),0)
+        gradients = blur1 - blur2
+
+        pixelSum = np.sum(gradients[0:inputImg.shape[0]-1, 0:inputImg.shape[1]-1, 0:inputImg.shape[2]-1])
+        average = pixelSum / (inputImg.shape[0] * inputImg.shape[1] * inputImg.shape[2])
+
+        print(average)
+        # cv2.imwrite(str(time.time()) + '.png', gradients)      
+
+        return (average > threshold)
+
+
+    @staticmethod
+    def cropImageRectangles(self, img, binaryBackgroundImage, minArea=-100, maxImageDimensionRelation=2.5, imagePadding=10):
+
         # initialize output images
         croppedImages = []
 
@@ -56,25 +91,87 @@ class BackgroundRemover:
 
         albumImageHeight = binaryBackgroundImage.shape[0]
         albumImageWidth = binaryBackgroundImage.shape[1]
+        
+        if(minArea < 0):
+            minArea = albumImageHeight * albumImageWidth / (-minArea)
+
+        countIngoredBecauseCornerDistance = 0
+        countIngoredBecauseMinArea = 0
+        countIngoredBecauseTotalAlbum = 0
+        countIngoredBecauseDimensionRelation = 0
 
         for i in range(len(contours)):
-            corners = [[albumImageWidth, albumImageHeight],[0, 0]]
+            # the virtual corners correspond to the edges if every point should be in the image
+            # the real corners are the contour points which are closest to the edge
+
+            virtualcorners = [[albumImageWidth, albumImageHeight],[0, 0]]
+            realcorners = [[albumImageWidth, albumImageHeight],[0, 0]]
+
             for j in range(len(contours[i])):
-                if corners[0][0] > contours[i][j][0][0]:
-                    corners[0][0] = contours[i][j][0][0]
-                if corners[0][1] > contours[i][j][0][1]:
-                    corners[0][1] = contours[i][j][0][1]
-                if corners[1][0] < contours[i][j][0][0]:
-                    corners[1][0] = contours[i][j][0][0]
-                if corners[1][1] < contours[i][j][0][1]:
-                    corners[1][1] = contours[i][j][0][1]
-                
-            imageWidth = corners[0][0] - corners[1][0]
-            imageHeight = corners[0][1] - corners[1][1]
+                if virtualcorners[0][0] > contours[i][j][0][0]:
+                    virtualcorners[0][0] = contours[i][j][0][0]
+                if virtualcorners[0][1] > contours[i][j][0][1]:
+                    virtualcorners[0][1] = contours[i][j][0][1]
+                if virtualcorners[1][0] < contours[i][j][0][0]:
+                    virtualcorners[1][0] = contours[i][j][0][0]
+                if virtualcorners[1][1] < contours[i][j][0][1]:
+                    virtualcorners[1][1] = contours[i][j][0][1]
+
+                if realcorners[0][0] + realcorners[0][1] > contours[i][j][0][0] + contours[i][j][0][1]:
+                    realcorners[0][0] = contours[i][j][0][0]
+                    realcorners[0][1] = contours[i][j][0][1]
+
+                if realcorners[1][0] + realcorners[1][1] < contours[i][j][0][0] + contours[i][j][0][1]:
+                    realcorners[1][0] = contours[i][j][0][0]
+                    realcorners[1][1] = contours[i][j][0][1]
+
+            # check if virtual corners are near real corners
+            maxcornerdistance = math.sqrt(albumImageWidth*albumImageWidth + albumImageHeight*albumImageHeight)/20
+
+            cornerdistance_topleft = math.sqrt(math.pow(realcorners[1][0] - virtualcorners[1][0] , 2) + math.pow(realcorners[1][1] - virtualcorners[1][1] , 2)) 
+            cornerdistance_bottomright = math.sqrt(math.pow(realcorners[0][0] - virtualcorners[0][0] , 2) + math.pow(realcorners[0][1] - virtualcorners[0][1] , 2))   
+
+            if cornerdistance_topleft > maxcornerdistance or cornerdistance_bottomright > maxcornerdistance:
+                countIngoredBecauseCornerDistance += 1
+                continue
+
+            imageWidth = abs(realcorners[0][0] - realcorners[1][0])
+            imageHeight = abs(realcorners[0][1] - realcorners[1][1])
             imageArea = abs(imageWidth * imageHeight)
-            if(imageArea >= minArea and imageHeight/imageWidth < maxImageDimensionRelation and imageWidth/imageHeight < maxImageDimensionRelation): 
-                crop = img[corners[0][1]:corners[1][1],corners[0][0]:corners[1][0]]
-                croppedImages.append(crop)
+
+            # dont save images that are the whole album image
+            if img.shape[0] < imageHeight * 1.1 and img.shape[1] < imageWidth * 1.1:
+                countIngoredBecauseTotalAlbum += 1
+                continue
+
+            # dont save images, that are to small
+            if imageArea < minArea:
+                countIngoredBecauseMinArea += 1
+                continue
+
+            # dont save images, that have weird dimensions
+            if imageHeight/imageWidth > maxImageDimensionRelation or imageWidth/imageHeight > maxImageDimensionRelation: 
+                countIngoredBecauseDimensionRelation += 1
+                continue
+
+            # if there is enough space add some padding
+            if realcorners[0][1] - imagePadding > 0:
+                realcorners[0][1] -= imagePadding
+            if realcorners[0][0] - imagePadding > 0:
+                realcorners[0][0] -= imagePadding
+            if realcorners[1][1] + imagePadding < img.shape[0]:
+                realcorners[1][1] += imagePadding
+            if realcorners[1][0] + imagePadding < img.shape[1]:
+                realcorners[1][0] += imagePadding
+
+            crop = img[realcorners[0][1]:realcorners[1][1],realcorners[0][0]:realcorners[1][0]]
+            croppedImages.append(crop)
+
+
+        print("ignored due to CornerDistance: " + str(countIngoredBecauseCornerDistance))
+        print("ignored due to MinArea: " + str(countIngoredBecauseMinArea))
+        print("ignored due to TotalAlbum: " + str(countIngoredBecauseTotalAlbum))
+        print("ignored due to DimensionRelation: " + str(countIngoredBecauseDimensionRelation))
 
         return croppedImages
 
@@ -88,15 +185,70 @@ class BackgroundRemover:
         backgroundLocation = self.getBackgroundSpot(self,img, background_color)
         binaryImg = self.generateBinaryBackgroundImage(self,img, background_color)
         binaryBackgroundImg = self.separateBackground(self,binaryImg, backgroundLocation)
+
+        binaryEdge = self.generateBinaryExtendedEdgeImage(self,inputImg)
+
+        print(cv2.cvtColor(binaryEdge, cv2.COLOR_BGR2GRAY).shape)
+        print(binaryBackgroundImg.shape)
+        # binaryBackgroundImg = cv2.bitwise_or(binaryBackgroundImg, binaryEdge)
+
+        cv2.imwrite('binary.png', cv2.cv2.bitwise_not(binaryImg))
+        cv2.imwrite('binary-back.png',binaryBackgroundImg)
+        
         croppedImages = self.cropImageRectangles(self,img, binaryBackgroundImg)
+        validCroppedImages = []
 
-        return croppedImages
+        for c in croppedImages:
+            enoughFeatures = self.checkForFeatures(self, c)
+            if enoughFeatures:
+                validCroppedImages.append(c)
+
+        
+
+        return validCroppedImages
+
+def deleteFolderContent(folderpath):
+    if not os.path.exists(folderpath):
+        os.makedirs(folderpath)
+        return
+
+    for the_file in os.listdir(folderpath):
+        file_path = os.path.join(folderpath, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
 
 
 
-inputImg = cv2.imread('../input/A2/16.tif')
-# img = cv2.resize(inputImg, (0,0), fx=0.3, fy=0.3) 
-croppedImages = BackgroundRemover.getImagesWithoutBackground(BackgroundRemover, inputImg)
+def processAllImages(folderpath, outputpath="./output"):
+    deleteFolderContent(outputpath)
+    for imagepath in os.listdir(folderpath): 
+        print(imagepath)  
+        processImage(os.path.join(folderpath, imagepath), outputpath)
 
-for i in range(len(croppedImages)):
-    cv2.imwrite('image-' + str(i) + '.png',croppedImages[i])
+def processImage(path, outputpath="./output"):
+    if not os.path.exists(path):
+        print("file does not exists")
+        return
+
+    inputImg = cv2.imread(path)
+    # inputImg = cv2.bilateralFilter(inputImg,20,75,10)
+    # inputImgPreprocessed = cv2.bilateralFilter(inputImg,9,75,75)
+    inputImgPreprocessed = inputImg
+    # inputImg = cv2.resize(inputImg, (0,0), fx=0.3, fy=0.3) 
+    croppedImages = BackgroundRemover.getImagesWithoutBackground(BackgroundRemover, inputImgPreprocessed)
+    imagename = os.path.basename(path)
+    imagename = os.path.splitext(imagename)[0]
+
+    
+
+    for i in range(len(croppedImages)):
+        cv2.imwrite(outputpath + '/' + imagename + '_' + str(i) + '.png',croppedImages[i])
+
+
+deleteFolderContent("./output")
+processImage("../input/A2/45.tif")
+# processAllImages("../input/A2")
+# processAllImages("../input/A1")
