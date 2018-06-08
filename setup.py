@@ -1,15 +1,15 @@
 from setuptools import setup
 
-setup(name='image_extractor',
+setup(name='imextract',
       version='0.1',
-      packages=['image_extractor'],
+      packages=['imextract'],
       install_requires=[
           "numpy",
           "opencv-python"
       ],
       entry_points={
           'console_scripts': [
-              'image_extractor = image_extractor.__main__:main'
+              'imextract = imextract.__main__:main'
               ]
         },
       )
