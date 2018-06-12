@@ -12,8 +12,9 @@ def main(args=None):
 
     if args.compare:
         truth = cv2.imread(args.compare, cv2.IMREAD_COLOR)
-        print("Difference percentage of the size: {}".format(cp.compare_size(truth, img)))
-        print("Difference percentage of the features: {}".format(cp.compare_feature(thruth, img, 20, 0.5)))
+        print("Difference percentage of the size: {} %".format(cp.compare_size(truth, img)))
+        print("Difference percentage of the features: {} %".format(cp.compare_feature(truth, img, 20, 20.0)))
+        print("SSIM: {} %".format(cp.ssim(truth, img)))
     else:
         if args.path:
             br.processImage(img, args.path)
