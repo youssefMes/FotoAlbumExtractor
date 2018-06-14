@@ -1,19 +1,20 @@
-import numpy as np 
 import cv2
+import numpy as np
 
-class DessinerLigne:
-    def dessinerLigne(self):
-        # Create a black image
-        self.img=np.zeros((512,512,3),np.uint8)
+filename = "binary-back.png"
+img = cv2.imread(filename)
+img = cv2.resize(img, (0,0), fx=0.1, fy=0.1) 
+gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
-        # Draw a diagonal blue line with thickness of 5 px
-        cv2.line(self.img,(0,0),(511,511),(255,0,0),5)
-        cv2.imshow("Image", self.img)
-        # If q is pressed then exit program
-        self.k=cv2.waitKey(0)
-        if self.k==ord('q'):
-            cv2.destroyAllWindows()
+gray = np.float32(gray)
+dst = cv2.cornerHarris(gray,2,3,0.04)
 
-if __name__=="__main__":
-    DL=DessinerLigne()
-    DL.dessinerLigne()
+#result is dilated for marking the corners, not important
+dst = cv2.dilate(dst,None)
+
+# Threshold for an optimal value, it may vary depending on the image.
+img[dst>0.3*dst.max()]=[0,0,255]
+
+cv2.imshow('dst',img)
+if cv2.waitKey(0) & 0xff == 27:
+    cv2.destroyAllWindows()

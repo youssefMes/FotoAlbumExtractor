@@ -15,7 +15,7 @@ class BackgroundRemover:
 
 
     @staticmethod
-    def getBackgroundSpot(self, img, background_color, spot_size=200):
+    def getBackgroundSpot(self, img, background_color, spot_size=75):
         spot_template = np.zeros((spot_size,spot_size,3), np.uint8)
         spot_template[:,:,0] = background_color
         spot_template[:,:,1] = background_color
@@ -40,11 +40,18 @@ class BackgroundRemover:
 
     @staticmethod
     def separateBackground(self, binaryBackgroundImg, backgroundLocation):
+        
         im_floodfill = binaryBackgroundImg.copy()
+        im_floodfill[im_floodfill == 128] = 0
         h, w = binaryBackgroundImg.shape[:2]
         mask = np.zeros((h+2, w+2), np.uint8)
         cv2.floodFill(im_floodfill, mask, backgroundLocation, 128)
-        im_floodfill[im_floodfill ==0] = 255
+        cv2.floodFill(im_floodfill, mask, (0,0), 128)
+        cv2.floodFill(im_floodfill, mask, (w-1,0), 128)
+        cv2.floodFill(im_floodfill, mask, (w-1,h-1), 128)
+        cv2.floodFill(im_floodfill, mask, (0,h-1), 128)
+        im_floodfill[im_floodfill < 128] = 255
+        im_floodfill[im_floodfill > 128] = 255
         im_floodfill[im_floodfill == 128] = 0
 
         return im_floodfill
@@ -56,28 +63,37 @@ class BackgroundRemover:
         temp = cv2.resize(img, (0,0), fx=0.45, fy=0.45)  
         temp = cv2.bilateralFilter(temp,15,75,75)    
         blur1 = cv2.GaussianBlur(temp,(3,3),0)
-        blur2 = cv2.GaussianBlur(temp,(15,15),0)
+        blur2 = cv2.GaussianBlur(temp,(11,11),0)
         gradients = blur1 - blur2
         # gradients = cv2.Laplacian(temp,cv2.CV_64F)
+        # kernel = np.ones((15,15),np.uint8)
         kernel = np.zeros((15,15),np.uint8)
         kernel = cv2.circle(kernel, (7,7), 5, 1, -1)
         gradients = cv2.morphologyEx(gradients, cv2.MORPH_CLOSE, kernel)
+        gradients = cv2.morphologyEx(gradients, cv2.MORPH_CLOSE, kernel)
         binaryedge = cv2.resize(gradients, (img.shape[1],img.shape[0]))         
-        cv2.imwrite('gradients.png',binaryedge)
         return binaryedge
 
     @staticmethod
-    def checkForFeatures(self, inputImg, threshold = 10):
-        blur1 = cv2.GaussianBlur(inputImg,(7,7),0)
-        blur2 = cv2.GaussianBlur(inputImg,(15,15),0)
-        gradients = blur1 - blur2
+    def checkForFeatures(self, inputImg, threshold = 1.2):
 
-        pixelSum = np.sum(gradients[0:inputImg.shape[0]-1, 0:inputImg.shape[1]-1, 0:inputImg.shape[2]-1])
+        # kernel = np.divide([[1,1,1],[1,1,1],[1,1,1]], 9)
+        # blur1 = cv2.filter2D(inputImg,-1,kernel)
+        # blur1 = cv2.GaussianBlur(inputImg,(7,7),0)
+        # blur2 = cv2.GaussianBlur(inputImg,(13,13),0)
+        # gradients = blur1 - blur2
+        gradients = cv2.Canny(inputImg,10,40)
+        kernel = np.zeros((15,15),np.uint8)
+        kernel = cv2.circle(kernel, (7,7), 5, 1, -1)
+        gradients = cv2.morphologyEx(gradients, cv2.MORPH_CLOSE, kernel)
+
+        # cv2.imshow("temp", gradients)
+        # cv2.waitKey()
+
+        pixelSum = np.sum(gradients[:])
         average = pixelSum / (inputImg.shape[0] * inputImg.shape[1] * inputImg.shape[2])
 
         print(average)
-        # cv2.imwrite(str(time.time()) + '.png', gradients)      
-
         return (average > threshold)
 
 
@@ -135,8 +151,8 @@ class BackgroundRemover:
                 countIngoredBecauseCornerDistance += 1
                 continue
 
-            imageWidth = abs(realcorners[0][0] - realcorners[1][0])
-            imageHeight = abs(realcorners[0][1] - realcorners[1][1])
+            imageWidth = abs(virtualcorners[0][0] - virtualcorners[1][0])
+            imageHeight = abs(virtualcorners[0][1] - virtualcorners[1][1])
             imageArea = abs(imageWidth * imageHeight)
 
             # dont save images that are the whole album image
@@ -182,18 +198,24 @@ class BackgroundRemover:
         img = cv2.filter2D(inputImg,-1,kernel)
 
         background_color = self.getPrimaryBackgroundColor(self,img)
+        # print(background_color)
         backgroundLocation = self.getBackgroundSpot(self,img, background_color)
+        # print(backgroundLocation)
         binaryImg = self.generateBinaryBackgroundImage(self,img, background_color)
-        binaryBackgroundImg = self.separateBackground(self,binaryImg, backgroundLocation)
+
 
         binaryEdge = self.generateBinaryExtendedEdgeImage(self,inputImg)
+        binaryEdge = cv2.cvtColor(binaryEdge, cv2.COLOR_BGR2GRAY)
+        binaryImg = cv2.bitwise_or(binaryEdge, cv2.bitwise_not(binaryImg))
+        # binaryImg = cv2.bitwise_not(binaryImg)
 
-        print(cv2.cvtColor(binaryEdge, cv2.COLOR_BGR2GRAY).shape)
-        print(binaryBackgroundImg.shape)
-        # binaryBackgroundImg = cv2.bitwise_or(binaryBackgroundImg, binaryEdge)
+        binaryBackgroundImg = self.separateBackground(self,binaryImg, backgroundLocation)
+        # binaryBackgroundImg = cv2.bitwise_not(binaryBackgroundImg)
 
-        cv2.imwrite('binary.png', cv2.cv2.bitwise_not(binaryImg))
+
+        cv2.imwrite('binary.png', binaryImg)
         cv2.imwrite('binary-back.png',binaryBackgroundImg)
+        cv2.imwrite('gradients.png',binaryEdge)
         
         croppedImages = self.cropImageRectangles(self,img, binaryBackgroundImg)
         validCroppedImages = []
@@ -249,6 +271,6 @@ def processImage(path, outputpath="./output"):
 
 
 deleteFolderContent("./output")
-processImage("../input/A2/45.tif")
-# processAllImages("../input/A2")
-# processAllImages("../input/A1")
+# processImage("../input/sample_data_02/04.tif")
+processAllImages("../input/sample_data_02")
+# processAllImages("../input/sample_data_01")
