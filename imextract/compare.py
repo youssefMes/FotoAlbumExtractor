@@ -9,12 +9,12 @@ def compare_size(truth, img):
     The difference is represented as percentage which is positive if the image is greater than the ground truth
     and negative if the image is smaller.
 
-    :param image: this is the image, which will be compared to the second parameter. 
-    :param truth: this is the image with the groundtruth for the comparison. 
-    :type image: Mat - n-dimansional dense array to represent an image. 
-    :type truth: Mat - n-dimansional dense array to represent an image. 
-    :returns: The difference as Percentage.
-    :rtype: float 
+    :param image: this is the image, which will be compared to the second parameter.  
+    :param truth: this is the image with the groundtruth for the comparison.   
+    :type image: Mat - n-dimansional dense array to represent an image.  
+    :type truth: Mat - n-dimansional dense array to represent an image.  
+    :returns: The difference as Percentage.  
+    :rtype: float  
     '''   
     # compute image size
     img_width, img_height, _ = img.shape
@@ -121,3 +121,4 @@ def ssim(truth, img):
     truth_mini = cv2.resize(truth, size)
 
     return skimage.compare_ssim(truth_mini, img_mini)
+    

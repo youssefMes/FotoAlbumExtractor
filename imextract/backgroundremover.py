@@ -50,16 +50,20 @@ def generateBinaryExtendedEdgeImage(img):
     # downsample for performance increase an noise reduction
     # temp = img
     temp = cv2.resize(img, (0,0), fx=0.45, fy=0.45)  
-    temp = cv2.bilateralFilter(temp,15,75,75)    
+    temp = cv2.bilateralFilter(temp,15,75,75)  
+
     blur1 = cv2.GaussianBlur(temp,(3,3),0)
     blur2 = cv2.GaussianBlur(temp,(15,15),0)
+
     gradients = blur1 - blur2
-    # gradients = cv2.Laplacian(temp,cv2.CV_64F)
+
     kernel = np.zeros((15,15),np.uint8)
     kernel = cv2.circle(kernel, (7,7), 5, 1, -1)
+
     gradients = cv2.morphologyEx(gradients, cv2.MORPH_CLOSE, kernel)
+
     binaryedge = cv2.resize(gradients, (img.shape[1],img.shape[0]))         
-    cv2.imwrite('gradients.png',binaryedge)
+
     return binaryedge
 
 
@@ -71,8 +75,7 @@ def checkForFeatures(inputImg, threshold = 10):
     pixelSum = np.sum(gradients[0:inputImg.shape[0]-1, 0:inputImg.shape[1]-1, 0:inputImg.shape[2]-1])
     average = pixelSum / (inputImg.shape[0] * inputImg.shape[1] * inputImg.shape[2])
 
-    print(average)
-    # cv2.imwrite(str(time.time()) + '.png', gradients)      
+    print(average)   
 
     return (average > threshold)
 
@@ -184,10 +187,6 @@ def getImagesWithoutBackground(inputImg):
 
     print(cv2.cvtColor(binaryEdge, cv2.COLOR_BGR2GRAY).shape)
     print(binaryBackgroundImg.shape)
-    # binaryBackgroundImg = cv2.bitwise_or(binaryBackgroundImg, binaryEdge)
-
-    cv2.imwrite('binary.png', cv2.cv2.bitwise_not(binaryImg))
-    cv2.imwrite('binary-back.png',binaryBackgroundImg)
     
     croppedImages = cropImageRectangles(img, binaryBackgroundImg)
     validCroppedImages = []
@@ -200,16 +199,9 @@ def getImagesWithoutBackground(inputImg):
     return validCroppedImages
 
 
-def processAllImages(folderpath, outputpath="./output"):
-    deleteFolderContent(outputpath)
-    for imagepath in os.listdir(folderpath): 
-        print(imagepath)  
-        processImage(os.path.join(folderpath, imagepath), outputpath)
-
-
-def processImage(img, outputpath="./output"):
+def processImage(img, name, outputpath="./output"):
 
     croppedImages = getImagesWithoutBackground(img)
 
     for i in range(len(croppedImages)):
-        cv2.imwrite(outputpath + '/result_' + str(i) + '.png', croppedImages[i])
+        cv2.imwrite(outputpath + '/'+ name +'_' + str(i) + '.png', croppedImages[i])

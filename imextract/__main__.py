@@ -16,24 +16,12 @@ def main(args=None):
         print("Difference percentage of the features: {} %".format(cp.compare_feature(truth, img, 20, 20.0)))
         print("SSIM: {} %".format(cp.ssim(truth, img)))
     else:
+        full_name = os.path.basename(args.image)
+        name = os.path.splitext(full_name)[0]
         if args.path:
-            br.processImage(img, args.path)
+            br.processImage(img, name, args.path)
         else:
-            br.processImage(img)
-
-
-def deleteFolderContent(folderpath):
-    if not os.path.exists(folderpath):
-        os.makedirs(folderpath)
-        return
-
-    for the_file in os.listdir(folderpath):
-        file_path = os.path.join(folderpath, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            print(e)
+            br.processImage(img, name)
 
 
 if __name__ == "__main__":
