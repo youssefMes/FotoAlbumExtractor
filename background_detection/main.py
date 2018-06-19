@@ -98,7 +98,7 @@ class BackgroundRemover:
 
 
     @staticmethod
-    def cropImageRectangles(self, img, binaryBackgroundImage, minArea=-100, maxImageDimensionRelation=2.5, imagePadding=10):
+        def cropImageRectangles(self, img, binaryBackgroundImage, minArea=-100, maxImageDimensionRelation=2.5, imagePadding=10):
 
         # initialize output images
         croppedImages = []
@@ -171,16 +171,16 @@ class BackgroundRemover:
                 continue
 
             # if there is enough space add some padding
-            if realcorners[0][1] - imagePadding > 0:
-                realcorners[0][1] -= imagePadding
-            if realcorners[0][0] - imagePadding > 0:
-                realcorners[0][0] -= imagePadding
-            if realcorners[1][1] + imagePadding < img.shape[0]:
-                realcorners[1][1] += imagePadding
-            if realcorners[1][0] + imagePadding < img.shape[1]:
-                realcorners[1][0] += imagePadding
+            # if virtualcorners[0][1] - imagePadding > 0:
+            #     virtualcorners[0][1] -= imagePadding
+            # if virtualcorners[0][0] - imagePadding > 0:
+            #     virtualcorners[0][0] -= imagePadding
+            # if virtualcorners[1][1] + imagePadding < img.shape[0]:
+            #     virtualcorners[1][1] += imagePadding
+            # if virtualcorners[1][0] + imagePadding < img.shape[1]:
+            #     virtualcorners[1][0] += imagePadding
 
-            crop = img[realcorners[0][1]:realcorners[1][1],realcorners[0][0]:realcorners[1][0]]
+            crop = img[virtualcorners[0][1]:virtualcorners[1][1],virtualcorners[0][0]:virtualcorners[1][0]]
             croppedImages.append(crop)
 
 
