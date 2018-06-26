@@ -3,7 +3,6 @@ import cv2
 import matplotlib.pyplot as plt
 import math
 import os
-import time
 
 class BackgroundRemover:
     @staticmethod
@@ -171,14 +170,14 @@ class BackgroundRemover:
                 continue
 
             # if there is enough space add some padding
-            # if virtualcorners[0][1] - imagePadding > 0:
-            #     virtualcorners[0][1] -= imagePadding
-            # if virtualcorners[0][0] - imagePadding > 0:
-            #     virtualcorners[0][0] -= imagePadding
-            # if virtualcorners[1][1] + imagePadding < img.shape[0]:
-            #     virtualcorners[1][1] += imagePadding
-            # if virtualcorners[1][0] + imagePadding < img.shape[1]:
-            #     virtualcorners[1][0] += imagePadding
+            # if realcorners[0][1] - imagePadding > 0:
+            #     realcorners[0][1] -= imagePadding
+            # if realcorners[0][0] - imagePadding > 0:
+            #     realcorners[0][0] -= imagePadding
+            # if realcorners[1][1] + imagePadding < img.shape[0]:
+            #     realcorners[1][1] += imagePadding
+            # if realcorners[1][0] + imagePadding < img.shape[1]:
+            #     realcorners[1][0] += imagePadding
 
             crop = img[virtualcorners[0][1]:virtualcorners[1][1],virtualcorners[0][0]:virtualcorners[1][0]]
             croppedImages.append(crop)

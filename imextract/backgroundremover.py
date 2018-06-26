@@ -3,7 +3,6 @@ import cv2
 import matplotlib.pyplot as plt
 import math
 import os
-import time
 
 
 def getPrimaryBackgroundColor(img):
