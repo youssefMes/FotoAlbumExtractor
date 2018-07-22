@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 import os
 import sys
 import time
+import configparser
 
 # input path
 imagePath = "../background_detection/output1/"
@@ -16,14 +17,26 @@ facesPath = "./output1/"
 if not os.path.exists(facesPath):
     os.makedirs(facesPath)
 
+# parse config file
+config = configparser.ConfigParser()
+config.read('../config.ini')
+scaleFactor = config.getfloat('FaceDetection', 'ScaleFactor')
+minNeighbors = config.getint('FaceDetection', 'Neighbors')
+
+# scaleFactor = config['FaceDetection']['ScaleFactor']
+# print(scaleFactor)
+
 for file in os.listdir(imagePath):
     filename = os.fsdecode(file)
-    #print(filename)
+    # print(filename)
     if filename.endswith(".png"): 
         img = cv2.imread(imagePath+filename)
+        #convert the test image to gray image as opencv face detector expects gray images 
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        faces = haar_face_cascade.detectMultiScale(img_gray, scaleFactor=1.0, minNeighbors=5);  
+        # print(img_gray.dtype)
+
+        faces = haar_face_cascade.detectMultiScale(img_gray, scaleFactor, minNeighbors);  
  
         for (x, y, w, h) in faces:
             cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
@@ -37,7 +50,7 @@ for file in os.listdir(imagePath):
         sys.stdout.flush()
 
         continue
-    else:
+    # else:
         continue
 
 sys.stdout.write("\n")
