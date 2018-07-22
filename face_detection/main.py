@@ -19,12 +19,9 @@ if not os.path.exists(facesPath):
 
 # parse config file
 config = configparser.ConfigParser()
-config.read('../config.ini')
+config.read('../config')
 scaleFactor = config.getfloat('FaceDetection', 'ScaleFactor')
 minNeighbors = config.getint('FaceDetection', 'Neighbors')
-
-# scaleFactor = config['FaceDetection']['ScaleFactor']
-# print(scaleFactor)
 
 for file in os.listdir(imagePath):
     filename = os.fsdecode(file)
