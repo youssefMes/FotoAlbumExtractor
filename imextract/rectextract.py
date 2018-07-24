@@ -21,7 +21,7 @@ def process_image(img):
     if cv2.waitKey(0) & 0xff == 27:
         cv2.destroyAllWindows()
 
-def detect_white_boarder(img, margin=40, threshold=180):
+def detect_white_boarder(img, margin=50, threshold=180):
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
     y, x = gray.shape
@@ -38,7 +38,19 @@ def detect_white_boarder(img, margin=40, threshold=180):
 
     print((top_color, bottom_color, left_color, right_color))
 
-    if top_color > threshold and bottom_color > threshold and left_color > threshold and right_color > threshold:
+    count = 0
+
+    if top_color > threshold:
+        count += 1
+    if bottom_color > threshold:
+        count += 1
+    if left_color > threshold:
+        count += 1
+    if right_color > threshold:
+        count += 1
+
+
+    if count >= 3:
         top_row = -1
         bottom_row = -1
         left_row = -1
