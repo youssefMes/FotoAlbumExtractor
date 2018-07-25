@@ -6,8 +6,7 @@ import time
 import configparser
 
 # input path
-imagePath = "../background_detection/output1/"
-# imagePath = "../background_detection/output2/"
+imagePath = "../output/"
 # training data storing path
 haar_face_cascade = cv2.CascadeClassifier(sys.exec_prefix + '/Lib/site-packages/cv2/data/haarcascade_frontalface_alt.xml')
 # output path

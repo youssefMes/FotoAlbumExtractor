@@ -17,11 +17,7 @@ def process_image(img):
     #detect_corner(img)
     #detect_conturs(img)
 
-    cv2.imwrite('test.png', img)
-
-    cv2.imshow('dst', img)
-    if cv2.waitKey(0) & 0xff == 27:
-        cv2.destroyAllWindows()
+    return img
 
 
 def margin(img, side="top", threshold=180, step_size=10, max_steps=10, min_percentage=0.4):
@@ -58,10 +54,6 @@ def margin(img, side="top", threshold=180, step_size=10, max_steps=10, min_perce
 
     margin -= step_size
     color = hist.argmax(axis=0)
-
-    print(current)
-    print(color)
-    print(step)
 
     if current < min_percentage:
         frame   = None

@@ -26,11 +26,11 @@ def main(args=None):
         else:
             path = "./output"
 
-        cropped_images = br.process_image(img, name, path)
+        cropped_images = br.process_image(img)
 
         for i in range(len(cropped_images)):
             img = re.process_image(cropped_images[i])
-            cv2.imwrite(outputpath + '/'+ name +'_' + str(i) + '.png', img)
+            cv2.imwrite(path + '/'+ name +'_' + str(i) + '.png', img)
 
         
 

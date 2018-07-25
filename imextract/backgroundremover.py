@@ -198,6 +198,6 @@ def getImagesWithoutBackground(inputImg):
     return validCroppedImages
 
 
-def process_image(img, name, outputpath="./output"):
+def process_image(img):
 
     return getImagesWithoutBackground(img)
