@@ -5,5 +5,5 @@
 ; put your parameters here
 
 [FaceDetection]
-ScaleFactor = 1.1
+ScaleFactor = 1.2
 Neighbors = 5
