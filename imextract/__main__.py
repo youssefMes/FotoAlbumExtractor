@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import compare as cp
 import backgroundremover as br
+import rectextract as re
 import os
 
 
@@ -19,10 +20,19 @@ def main(args=None):
     else:
         full_name = os.path.basename(args.image)
         name = os.path.splitext(full_name)[0]
+
         if args.path:
-            br.processImage(img, name, args.path)
+            path = args.path
         else:
-            br.processImage(img, name)
+            path = "./output"
+
+        cropped_images = br.process_image(img, name, path)
+
+        for i in range(len(cropped_images)):
+            img = re.process_image(cropped_images[i])
+            cv2.imwrite(outputpath + '/'+ name +'_' + str(i) + '.png', img)
+
+        
 
 
 if __name__ == "__main__":

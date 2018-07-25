@@ -198,9 +198,6 @@ def getImagesWithoutBackground(inputImg):
     return validCroppedImages
 
 
-def processImage(img, name, outputpath="./output"):
+def process_image(img, name, outputpath="./output"):
 
-    croppedImages = getImagesWithoutBackground(img)
-
-    for i in range(len(croppedImages)):
-        cv2.imwrite(outputpath + '/'+ name +'_' + str(i) + '.png', croppedImages[i])
+    return getImagesWithoutBackground(img)
