@@ -6,6 +6,14 @@ import os
 
 
 def getPrimaryBackgroundColor(img):
+    '''
+    Returns the primarily used color in the images, which is assumed to be the background color.
+
+    :param img: this is the image
+    :returns: the primary hue tone.  
+    :rtype: int  
+    '''  
+
     hist = cv2.calcHist([img],[0],None,[256],[0,256])
     # get most occurring color
     background_color = hist.argmax(axis=0) 
@@ -13,6 +21,16 @@ def getPrimaryBackgroundColor(img):
 
 
 def getBackgroundSpot(img, background_color, spot_size=200):
+    '''
+    Returns a position in the image, which is the most similar spot to the background color.
+
+    :param img: this is the image
+    :param background_color: this is the background color
+    :param spot_size: the size of the searched spot. The higher the value, the slower the search and up to a certain size more stable  
+    :returns: x, y coordinate of the background spot. 
+    :rtype: tuple  
+    '''  
+
     spot_template = np.zeros((spot_size,spot_size,3), np.uint8)
     spot_template[:,:,0] = background_color
     spot_template[:,:,1] = background_color
@@ -27,6 +45,16 @@ def getBackgroundSpot(img, background_color, spot_size=200):
 
 
 def generateBinaryBackgroundImage(img, background_color, threshold=25):
+    '''
+    Returns a binary image, which where the backgroundcolor with some threshold is seperated from the rest.
+
+    :param img: this is the image
+    :param background_color: this is the background color
+    :param threshold: the threshold around the primary backgroundcolor, which still should belong to the background.  
+    :returns: binary image. 
+    :rtype: array  
+    '''  
+
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret,mask1 = cv2.threshold(gray,background_color + threshold,255,0)
     ret,mask2 = cv2.threshold(gray,background_color + threshold,255,0)
@@ -35,6 +63,15 @@ def generateBinaryBackgroundImage(img, background_color, threshold=25):
 
 
 def separateBackground(binaryBackgroundImg, backgroundLocation):
+    '''
+    Returns a binary image, where the background ist black and the image locations are white.
+
+    :param binaryBackgroundImg: binary version of the image
+    :param backgroundLocation: a location (x,y) where there is some background  
+    :returns: binary image. 
+    :rtype: array  
+    '''  
+
     im_floodfill = binaryBackgroundImg.copy()
     h, w = binaryBackgroundImg.shape[:2]
     mask = np.zeros((h+2, w+2), np.uint8)
@@ -46,8 +83,14 @@ def separateBackground(binaryBackgroundImg, backgroundLocation):
 
   
 def generateBinaryExtendedEdgeImage(img):
-    # downsample for performance increase an noise reduction
-    # temp = img
+    '''
+    Returns a binary image, at which all the edges are white. For a better performance and noise reduction the image is downsampled and bilateral filter. The edges are detected by a comparision of the original image and a blurred one. By this small gaps in the edges are also detected.  
+
+    :param img: binary version of the image
+    :returns: binary image where the edges are white spoches and the rest is black. 
+    :rtype: array  
+    '''  
+
     temp = cv2.resize(img, (0,0), fx=0.45, fy=0.45)  
     temp = cv2.bilateralFilter(temp,15,75,75)  
 
@@ -66,20 +109,37 @@ def generateBinaryExtendedEdgeImage(img):
     return binaryedge
 
 
-def checkForFeatures(inputImg, threshold = 10):
-    blur1 = cv2.GaussianBlur(inputImg,(7,7),0)
-    blur2 = cv2.GaussianBlur(inputImg,(15,15),0)
+def checkForFeatures(img, threshold = 10):
+    '''
+    Returns true or false dependent on the amount of features (corners and edges) which are in the image. Used to remove images without content (only background).
+    :param img: input image
+    :param threshold: the necessary amount of features needed to be regarded as image
+    :returns: boolean, if image as enough features 
+    :rtype: bool  
+    '''  
+
+    blur1 = cv2.GaussianBlur(img,(7,7),0)
+    blur2 = cv2.GaussianBlur(img,(15,15),0)
     gradients = blur1 - blur2
 
-    pixelSum = np.sum(gradients[0:inputImg.shape[0]-1, 0:inputImg.shape[1]-1, 0:inputImg.shape[2]-1])
-    average = pixelSum / (inputImg.shape[0] * inputImg.shape[1] * inputImg.shape[2])
+    pixelSum = np.sum(gradients[0:img.shape[0]-1, 0:img.shape[1]-1, 0:img.shape[2]-1])
+    average = pixelSum / (img.shape[0] * img.shape[1] * img.shape[2])
 
-    print(average)   
 
     return (average > threshold)
 
 
 def cropImageRectangles(img, binaryBackgroundImage, minArea=-100, maxImageDimensionRelation=2.5, imagePadding=10):
+    '''
+    Returns an array of images, which are cut out of the original image. The cut is based on the binary background image. During this process unrelevant (to small, to monoton, ...) images are sorted out.
+    :param img: input image
+    :param binaryBackgroundImage: binary image showing where background and where foreground is.
+    :param minArea: the  size(area) an image must at leat have to be considered as an image.
+    :param maxImageDimensionRelation: the maximum relation between the width and the height of an image (-> strips are not allowed)
+    :param imagePadding: the padding with wich image is cut out of the original photo. 
+    :returns: an array of all the images in the scan
+    :rtype: array  
+    '''  
 
     # initialize output images
     croppedImages = []
@@ -174,6 +234,13 @@ def cropImageRectangles(img, binaryBackgroundImage, minArea=-100, maxImageDimens
 
 
 def getImagesWithoutBackground(inputImg):
+    '''
+    Approximatly cuts out all the photos in the input image.
+    :param inputImg: the scanned site of an album
+    :returns: array of cut out images
+    :rtype: array
+    '''  
+
     kernel = np.ones((5,5),np.float32)/25
     img = cv2.filter2D(inputImg,-1,kernel)
 
