@@ -1,9 +1,28 @@
+#----------------------------
+# parameter for background detection
+#----------------------------
 [BackgroundDetection]
-; put your parameters here
+# put your parameters here
 
+#----------------------------
+# Parameter for image detection
+#----------------------------
 [ImageDetection]
-; put your parameters here
+# put your parameters here
 
+
+#----------------------------
+# Parameter for the face detection
+#----------------------------
 [FaceDetection]
+# path for the Haarcascade files for frontal faces
+CascadePathFrontal = ./cascade/haarcascade_frontalface.xml
+
+# path for the Haarcascade files for profile faces
+CascadePathProfile = ./cascade/haarcascade_profileface.xml
+
+# TODO: Comment
 ScaleFactor = 1.2
+
+# TODO: Comment
 Neighbors = 5

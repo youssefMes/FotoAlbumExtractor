@@ -1,10 +1,9 @@
 import numpy as np
 import cv2
 
-from matplotlib import pyplot as plt
 
-def process_image(img):
-    '''
+def process_image(img, config):
+    """
     Parameters
     ----------
     img: ndarray - Image to extract
@@ -12,7 +11,7 @@ def process_image(img):
     Returns
     -------
     result: ndarray - Extracted image 
-    '''
+    """
     img = detect_white_boarder(img)
     #detect_corner(img)
     #detect_conturs(img)
@@ -25,10 +24,10 @@ def margin(img, side="top", threshold=180, step_size=10, max_steps=10, min_perce
 
     frame = []
 
-    margin  = 0
-    last    = 0
+    margin = 0
+    last = 0
     current = 0
-    step    = 0
+    step = 0
 
     while current >= last and step < max_steps:
         margin += step_size

@@ -4,18 +4,18 @@ import cv2
 
 
 def compare_size(truth, img):
-    '''
+    """
     Returns the computed difference in size between the image and the ground truth. 
     The difference is represented as percentage which is positive if the image is greater than the ground truth
     and negative if the image is smaller.
 
-    :param image: this is the image, which will be compared to the second parameter.  
-    :param truth: this is the image with the groundtruth for the comparison.   
-    :type image: Mat - n-dimansional dense array to represent an image.  
-    :type truth: Mat - n-dimansional dense array to represent an image.  
+    :param img: this is the image, which will be compared to the second parameter.
+    :param truth: this is the image with the ground-truth for the comparison.
+    :type img: Mat - n-dimensional dense array to represent an image.
+    :type truth: Mat - n-dimensional dense array to represent an image.
     :returns: The difference as Percentage.  
     :rtype: float  
-    '''   
+    """
     # compute image size
     img_width, img_height, _ = img.shape
     truth_width, truth_height, _ = truth.shape
@@ -31,21 +31,21 @@ def compare_size(truth, img):
 
     
 def compare_feature(truth, img, max_features, threshold):
-    '''
+    """
     Returns the computed difference between features of the image and the ground truth.
     This method uses ORB to detect features.
 
-    :param image: this is the image, which will be compared to the second parameter. 
+    :param img: this is the image, which will be compared to the second parameter.
     :param truth: this is the image with the groundtruth for the comparison.
     :param max_features: this is the maximum count of used features to compare the two images.
     :param threshold: this is the maximum distance between two fitting features. 
-    :type image: ndarray - n-dimansional dense array to represent an image. 
+    :type img: ndarray - n-dimansional dense array to represent an image.
     :type truth: ndarray - n-dimansional dense array to represent an image. 
     :type max_features: int
     :type threshold: float
     :returns: The difference Percentage.
     :rtype: float
-    '''
+    """
     img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
     truth = cv2.cvtColor(truth, cv2.COLOR_RGB2GRAY)
 
@@ -98,7 +98,7 @@ def compare_feature(truth, img, max_features, threshold):
 
 
 def ssim(truth, img):
-    '''
+    """
     Shrinks the images to the size of 64x64 using linear interpolation. 
     Then calculates structural similarity index metric (SSIM)
 
@@ -110,7 +110,7 @@ def ssim(truth, img):
     Returns
     -------
     ssim:   float - SSIM value between [-1,1]
-    '''
+    """
 
     size = (64,64)
 
