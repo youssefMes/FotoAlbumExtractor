@@ -1,7 +1,10 @@
 import cv2
 
 
-def detect(img, frontal_classifier, profile_classifier, scale=1.2, neighbors=5):
+def detect(img, frontal_classifier, profile_classifier, config):
+
+    scale = config.getfloat('FaceDetection', 'ScaleFactor')
+    neighbors = config.getint('FaceDetection', 'Neighbors')
 
     # convert the image to gray
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -26,16 +29,9 @@ def detect(img, frontal_classifier, profile_classifier, scale=1.2, neighbors=5):
 
     frontal_list.extend(profile_list)
 
-    return frontal_list
+    img = mark_faces(img, frontal_list)
 
-
-def save_faces(img, faces_list, output):
-    if faces_list:
-        i = 0
-        for (x, y, w, h) in faces_list:
-            sub_face = img[y:y + h, x:x + w]
-            cv2.imwrite(output + "test" + "_" + str(i) + ".png", sub_face)
-            i += 1
+    return img
 
 
 def mark_faces(img, faces_list):

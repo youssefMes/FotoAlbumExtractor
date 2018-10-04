@@ -1,129 +1,126 @@
 import numpy as np
 import cv2
+# import matplotlib.pyplot as plt
 
 
 def process_image(img, config):
     """
-    Parameters
-    ----------
-    img: ndarray - Image to extract
+    This extracts the image from a surrounding frame if a frame is existing.
 
-    Returns
-    -------
-    result: ndarray - Extracted image 
+    :param img: ndarray - The image to extract from frame.
+    :param config: dictionary - The configuration of the config file.
+    :return: Extracted image.
+    :rtype ndarray.
     """
-    img = detect_white_boarder(img)
-    #detect_corner(img)
-    #detect_conturs(img)
+    max_window_size = config.get('ImageExtraction', 'MaxWindowSize')
+
+    steps = config.get('ImageExtraction', 'Steps')
+    offset = config.get('ImageExtraction', 'Offset')
+
+    img = remove_boarder(img, steps, max_window_size, offset)
 
     return img
 
 
-def margin(img, side="top", threshold=180, step_size=10, max_steps=10, min_percentage=0.4):
+def remove_boarder(img, steps=25, max_window_size=0.1, gradient_offset=4):
+    """
+    Calculates the needed margins to remove the outlining boarder of the frame.
+
+    :param img: ndarray - The image.
+    :param steps: int - Each step increases the window where the best margin is found.
+    :param max_window_size: float - The maximum size of the window to search the best margin
+                            as percentage of the image.
+    :param gradient_offset: int - The number of ignored gradients in the beginning of the search
+                            to avoid to small margins.
+    :return: Extracted image.
+    :rtype ndarray.
+    """
+    height, width, _ = img.shape
+
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    canny = cv2.Canny(gray, 20, 50)
+
+    top_margin = find_margin(canny, "top", steps, max_window_size, gradient_offset)
+    bottom_margin = find_margin(canny, "bottom", steps, max_window_size, gradient_offset)
+    left_margin = find_margin(canny, "left", steps, max_window_size, gradient_offset)
+    right_margin = find_margin(canny, "right", steps, max_window_size, gradient_offset)
+
+    return img[top_margin:height - bottom_margin, left_margin:width - right_margin]
+
+
+def find_margin(img, side="top", steps=25, max_frame_size=0.1, gradient_offset=4):
+    """
+
+    :param img:
+    :param side:
+    :param steps:
+    :param max_frame_size:
+    :param gradient_offset:
+    :return:
+    """
+
     height, width = img.shape
 
-    frame = []
+    # calculate the step size
+    if side == "top" or side == "bottom":
+        step_size = calc_step_size(img, steps, max_frame_size, axis=1)
+    else:
+        step_size = calc_step_size(img, steps, max_frame_size, axis=0)
 
     margin = 0
-    last = 0
-    current = 0
     step = 0
 
-    while current >= last and step < max_steps:
+    results = []
+    frame = []
+
+    # get the feature for every search window
+    while step < steps:
         margin += step_size
 
         if side == "top":
             frame = img[0:margin, :]
         elif side == "bottom":
-            frame = img[height-margin:height, :]
+            frame = img[height - margin:height, :]
         elif side == "left":
             frame = img[:, 0:margin]
         elif side == "right":
-            frame = img[:, width-margin:width]
+            frame = img[:, width - margin:width]
 
-        hist = cv2.calcHist([frame], [0], None, [256], [0, 256])
+        results.append((frame > 0).sum())
 
-        y, x = frame.shape
+        step += 1
 
-        last = current
-        current = np.sum(hist[threshold:]) / (y * x)
+    # calculate the gradients of the results array with the offset
+    gradients = np.gradient(results)[gradient_offset:]
 
-        if current < min_percentage:
-            step += 1
+    # Plot the increasing feature count and the gradients
 
-    margin -= step_size
-    color = hist.argmax(axis=0)
+    # plt.title(side)
+    # plt.plot(results)
+    # plt.plot(np.gradient(results))
+    # plt.show()
 
-    if current < min_percentage:
-        frame   = None
-        margin  = 0
-        color   = 0
+    # get the last iminimum not the first in the array
+    last_min = len(gradients) - np.argmin(gradients[::-1])
+    last_min += gradient_offset
 
-    return frame, margin, color
-
-
-def detect_white_boarder(img, threshold=180):
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-
-    height, width = gray.shape
-
-    top, top_margin, top_color = margin(gray, side="top", threshold=threshold)
-    bottom, bottom_margin, bottom_color = margin(gray, side="bottom", threshold=threshold)
-    left, left_margin, left_color = margin(gray, side="left", threshold=threshold)
-    right, right_margin, right_color = margin(gray, side="right", threshold=threshold)
-
-    top_row = 0
-    bottom_row = 0
-    left_row = 0
-    right_row = 0
-
-    for i in range(top_margin):
-        if np.any(top[i, left_margin:width-right_margin] < top_color):
-            top_row = i
-
-    for i in range(bottom_margin):
-        if np.any(bottom[i, left_margin:width-right_margin] < bottom_color):
-            bottom_row = i
-    
-    for i in range(left_margin):
-        if np.any(left[top_margin:height-bottom_margin, i] < left_color):
-            left_row = i
-
-    for i in range(right_margin):
-        if np.any(right[top_margin:height-bottom_margin, i] < right_color):
-            right_row = i
-    
-    img = img[top_row:height - bottom_row, left_row:width - right_row ]
-    
-    return img
+    return last_min * step_size
 
 
-def detect_corner(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    gray = cv2.bilateralFilter(gray, 10, 15, 15)
-    gray = cv2.Canny(gray, 20, 50)
-    dst = cv2.cornerHarris(gray, 2, 5, 0.04)
+def calc_step_size(img, steps, max_frame_size, axis=0):
+    """
 
-    #result is dilated for marking the corners, not important
-    dst = cv2.dilate(dst,None)
+    :param img:
+    :param steps:
+    :param max_frame_size:
+    :param axis:
+    :return:
+    """
+    height, width = img.shape
 
-    # Threshold for an optimal value, it may vary depending on the image.
-    img[dst>0.01*dst.max()]=[0,0,255]
+    if axis == 1:
+        step_size = np.ceil((width * max_frame_size) / steps)
+    else:
+        step_size = np.ceil((height * max_frame_size) / steps)
 
-    cv2.imshow('dst',img)
-    if cv2.waitKey(0) & 0xff == 27:
-        cv2.destroyAllWindows()
-
-
-def detect_conturs(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    gray = cv2.bilateralFilter(gray, 10, 15, 15)
-    gray = cv2.Canny(gray, 20, 50)
-
-    im2, contours, hierarchy = cv2.findContours(gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    
-    img = cv2.drawContours(img, contours, -1, (0,255,0), 1)
-
-    cv2.imshow('dst',img)
-    if cv2.waitKey(0) & 0xff == 27:
-        cv2.destroyAllWindows()
+    return int(step_size)

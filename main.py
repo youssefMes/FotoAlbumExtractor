@@ -16,6 +16,10 @@ def main(args, config):
 
     img = cv2.imread(args.image, cv2.IMREAD_COLOR)
 
+    if img is None:
+        print("Image not found!")
+        return
+
     if args.compare:
         truth = cv2.imread(args.compare, cv2.IMREAD_COLOR)
         print("Difference percentage of the size: {} %".format(cp.compare_size(truth, img)))
@@ -27,18 +31,12 @@ def main(args, config):
 
         cropped_images = br.process_image(img, config)
 
-        for i in range(len(cropped_images)):
-            img = re.process_image(cropped_images[i], config)
+        for i, image in enumerate(cropped_images):
+
+            img = re.process_image(image, config)
 
             if args.face:
-                faces_list = fd.detect(img,
-                                       frontal_classifier,
-                                       profile_classifier,
-                                       config.getfloat('FaceDetection', 'ScaleFactor'),
-                                       config.getint('FaceDetection', 'Neighbors')
-                                       )
-
-                img = fd.mark_faces(img, faces_list)
+                img = fd.detect(img, frontal_classifier, profile_classifier, config)
 
             cv2.imwrite(args.result + '/' + name + '_' + str(i) + '.png', img)
 

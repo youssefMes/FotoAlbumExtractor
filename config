@@ -1,14 +1,23 @@
 #----------------------------
-# parameter for background detection
+# Parameter for removing the background
 #----------------------------
 [BackgroundDetection]
 # put your parameters here
 
+
 #----------------------------
-# Parameter for image detection
+# Parameter for extracting the image
 #----------------------------
-[ImageDetection]
-# put your parameters here
+[ImageExtraction]
+# The maximum size of the window within the program searches a frame around the image.
+MaxWindowSize = 0.1
+
+# The number of steps to search for the frame. The maximum window size
+# and the number of steps determine the size of the steps fitting to the image size.
+Steps = 25
+
+# The ignored steps. This is done to prevent the program of finding the already given image boarder.
+Offset = 4
 
 
 #----------------------------
