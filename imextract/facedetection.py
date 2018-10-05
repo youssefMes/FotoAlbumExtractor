@@ -1,10 +1,16 @@
 import cv2
 
 
-def detect(img, frontal_classifier, profile_classifier, config):
-
-    scale = config.getfloat('FaceDetection', 'ScaleFactor')
-    neighbors = config.getint('FaceDetection', 'Neighbors')
+def detect_faces(img, frontal_classifier, profile_classifier, scale, neighbors):
+    """
+    TODO: Comment
+    :param img:
+    :param frontal_classifier:
+    :param profile_classifier:
+    :param scale:
+    :param neighbors:
+    :return:
+    """
 
     # convert the image to gray
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -29,12 +35,18 @@ def detect(img, frontal_classifier, profile_classifier, config):
 
     frontal_list.extend(profile_list)
 
-    img = mark_faces(img, frontal_list)
-
-    return img
+    return frontal_list
 
 
 def mark_faces(img, faces_list):
+    """
+    TODO: Comment
+
+    :param img:
+    :param faces_list:
+    :return:
+    """
+
     if faces_list:
         for (x, y, w, h) in faces_list:
             cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)

@@ -1,9 +1,21 @@
 #----------------------------
 # Parameter for removing the background
 #----------------------------
-[BackgroundDetection]
-# put your parameters here
+[BackgroundRemover]
+# TODO: Comment
+SpotSize = 200
 
+# TODO: Comment
+BinaryThreshold = 25
+
+# TODO: Comment
+MinImageSize = -100
+
+# TODO: Comment
+MaxRelationImageDimensions = 2.5
+
+# TODO: Comment
+ImagePadding = 10
 
 #----------------------------
 # Parameter for extracting the image

@@ -8,8 +8,8 @@ def get_primary_background_color(img):
     Returns the primarily used color in the images, which is assumed to be the background color.
 
     :param img: this is the image
-    :returns: the primary hue tone.  
-    :rtype: int  
+    :returns the primary hue tone.
+    :rtype int
     """
 
     hist = cv2.calcHist([img], [0], None, [256], [0, 256])
@@ -27,8 +27,8 @@ def get_background_spot(img, background_color, spot_size=200):
     :param background_color: this is the background color
     :param spot_size:   the size of the searched spot.
                         The higher the value, the slower the search and up to a certain size more stable
-    :returns: x, y coordinate of the background spot. 
-    :rtype: tuple  
+    :returns x, y coordinate of the background spot.
+    :rtype tuple
     """
 
     spot_template = np.zeros((spot_size, spot_size, 3), np.uint8)
@@ -241,34 +241,20 @@ def crop_image_rectangles(img, binary_background_image, min_area=-100, max_dimen
     return cropped_images
 
 
-def process_image(img, config):
+def validate_cropped_images(cropped_images, feature_threshold):
     """
-    Approximately cuts out all the photos in the input image.
+    Validated the cropped image by checking for feature.
 
-    :param img: the scanned site of an album
-    :returns: array of cut out images
-    :rtype: array
+    :param feature_threshold: the necessary amount of features needed to be regarded as image
+    :param cropped_images: array - An array of cropped images
+    :return: An array of validated cropped images
+    :rtype array
     """
-
-    kernel = np.ones((5, 5), np.float32)/25
-    img = cv2.filter2D(img, -1, kernel)
-
-    background_color = get_primary_background_color(img)
-    background_location = get_background_spot(img, background_color)
-    binary_img = generate_binary_background_image(img, background_color)
-    binary_background_img = separate_background(binary_img, background_location)
-
-    binary_edge = generate_binary_extended_edge_image(img)
-
-    print(cv2.cvtColor(binary_edge, cv2.COLOR_BGR2GRAY).shape)
-    print(binary_background_img.shape)
-    
-    cropped_images = crop_image_rectangles(img, binary_background_img)
     valid_cropped_images = []
 
-    for c in cropped_images:
-        enough_features = check_for_features(c)
+    for image in cropped_images:
+        enough_features = check_for_features(image, feature_threshold)
         if enough_features:
-            valid_cropped_images.append(c)
+            valid_cropped_images.append(image)
 
     return valid_cropped_images

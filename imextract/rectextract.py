@@ -3,28 +3,9 @@ import cv2
 # import matplotlib.pyplot as plt
 
 
-def process_image(img, config):
-    """
-    This extracts the image from a surrounding frame if a frame is existing.
-
-    :param img: ndarray - The image to extract from frame.
-    :param config: dictionary - The configuration of the config file.
-    :return: Extracted image.
-    :rtype ndarray.
-    """
-    max_window_size = config.get('ImageExtraction', 'MaxWindowSize')
-
-    steps = config.get('ImageExtraction', 'Steps')
-    offset = config.get('ImageExtraction', 'Offset')
-
-    img = remove_boarder(img, steps, max_window_size, offset)
-
-    return img
-
-
 def remove_boarder(img, steps=25, max_window_size=0.1, gradient_offset=4):
     """
-    Calculates the needed margins to remove the outlining boarder of the frame.
+    Calculates the needed margins to remove the outlining boarder of the image.
 
     :param img: ndarray - The image.
     :param steps: int - Each step increases the window where the best margin is found.
@@ -48,24 +29,29 @@ def remove_boarder(img, steps=25, max_window_size=0.1, gradient_offset=4):
     return img[top_margin:height - bottom_margin, left_margin:width - right_margin]
 
 
-def find_margin(img, side="top", steps=25, max_frame_size=0.1, gradient_offset=4):
+def find_margin(canny, side="top", steps=25, max_frame_size=0.1, gradient_offset=4):
+    """
+    This method creates a window on the given side. The window is increased step by step with the size calculated by the
+    maximum frame size and the number of steps. For each window the number of white pixel is counted and saved.
+    In the end the gradients between those counted pixel is calculated and the smallest gradient gives the number
+    of needed steps.
+
+    :param canny: ndarray - Image created by canny operation
+    :param side: string - ["top", "bottom", "left", "right"] The side where the frame is searched
+    :param steps: int - The steps used to find the frame
+    :param max_frame_size: float - The maximal window size
+    :param gradient_offset: int - The number of ignored steps to prevent finding the already existing boarder
+    :return: The margin of the given side
+    :rtype int
     """
 
-    :param img:
-    :param side:
-    :param steps:
-    :param max_frame_size:
-    :param gradient_offset:
-    :return:
-    """
-
-    height, width = img.shape
+    height, width = canny.shape
 
     # calculate the step size
     if side == "top" or side == "bottom":
-        step_size = calc_step_size(img, steps, max_frame_size, axis=1)
+        step_size = calc_step_size(canny, steps, max_frame_size, axis=1)
     else:
-        step_size = calc_step_size(img, steps, max_frame_size, axis=0)
+        step_size = calc_step_size(canny, steps, max_frame_size, axis=0)
 
     margin = 0
     step = 0
@@ -78,13 +64,13 @@ def find_margin(img, side="top", steps=25, max_frame_size=0.1, gradient_offset=4
         margin += step_size
 
         if side == "top":
-            frame = img[0:margin, :]
+            frame = canny[0:margin, :]
         elif side == "bottom":
-            frame = img[height - margin:height, :]
+            frame = canny[height - margin:height, :]
         elif side == "left":
-            frame = img[:, 0:margin]
+            frame = canny[:, 0:margin]
         elif side == "right":
-            frame = img[:, width - margin:width]
+            frame = canny[:, width - margin:width]
 
         results.append((frame > 0).sum())
 
@@ -100,7 +86,7 @@ def find_margin(img, side="top", steps=25, max_frame_size=0.1, gradient_offset=4
     # plt.plot(np.gradient(results))
     # plt.show()
 
-    # get the last iminimum not the first in the array
+    # get the last minimum not the first in the array
     last_min = len(gradients) - np.argmin(gradients[::-1])
     last_min += gradient_offset
 
@@ -109,12 +95,14 @@ def find_margin(img, side="top", steps=25, max_frame_size=0.1, gradient_offset=4
 
 def calc_step_size(img, steps, max_frame_size, axis=0):
     """
+    Calculates the step size with the image size, the steps and the maximal size of the search window.
 
-    :param img:
-    :param steps:
-    :param max_frame_size:
-    :param axis:
-    :return:
+    :param img: ndarray - The image to get the width or height.
+    :param steps: int - The number of steps.
+    :param max_frame_size: float - The maximal window size.
+    :param axis: [0, 1] The axis of the image (x or y) to calculate the step size for.
+    :return: The step size.
+    :rtype int
     """
     height, width = img.shape
 
