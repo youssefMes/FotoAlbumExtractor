@@ -143,10 +143,10 @@ def crop_image_rectangles(img, binary_background_image, min_area=-100, max_dimen
 
     :param img: input image
     :param binary_background_image: binary image showing where background and where foreground is.
-    :param min_area: the  size(area) an image must at leat have to be considered as an image.
+    :param min_area: the size(area) an image must at least have to be considered as an image.
     :param max_dimension_relation: the maximum relation between the width and the height of an image
                                     (-> strips are not allowed)
-    :param image_padding: the padding with wich image is cut out of the original photo.
+    :param image_padding: the padding with which image is cut out of the original photo.
     :returns: an array of all the images in the scan
     :rtype: array  
     """

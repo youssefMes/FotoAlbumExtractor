@@ -2,20 +2,25 @@
 # Parameter for removing the background
 #----------------------------
 [BackgroundRemover]
-# TODO: Comment
+# The size of the searched spot in the background of the images to start the flood fill algorithm.
+# The higher the value, the slower the search but up to a certain size it is more stable.
 SpotSize = 200
 
-# TODO: Comment
+# The threshold around the primary background color, which still should belong to the background to create a
+# binary image which is separating the background colors from the rest.
 BinaryThreshold = 25
 
-# TODO: Comment
+# The size an image must at least have to be considered as an image.
 MinImageSize = -100
 
-# TODO: Comment
+# The maximum relation between the width and the height of an image to prevent the finding of strips.
 MaxRelationImageDimensions = 2.5
 
-# TODO: Comment
+# The padding with which image is cut out of the original photo.
 ImagePadding = 10
+
+# The necessary amount of features needed to be regarded as image. To check if the found image is legit.
+FeatureThreshold = 10
 
 #----------------------------
 # Parameter for extracting the image

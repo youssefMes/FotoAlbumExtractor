@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 
 def remove_boarder(img, steps=25, max_window_size=0.1, gradient_offset=4):
@@ -81,16 +81,19 @@ def find_margin(canny, side="top", steps=25, max_frame_size=0.1, gradient_offset
 
     # Plot the increasing feature count and the gradients
 
-    # plt.title(side)
-    # plt.plot(results)
-    # plt.plot(np.gradient(results))
-    # plt.show()
+    plt.title(side)
+    plt.plot(results)
+    plt.plot(np.gradient(results))
+    plt.show()
 
     # get the last minimum not the first in the array
-    last_min = len(gradients) - np.argmin(gradients[::-1])
-    last_min += gradient_offset
+    # last_min = len(gradients) - np.argmin(gradients[::-1])
+    # last_min += gradient_offset
 
-    return last_min * step_size
+    step_count = find_following_max(gradients)
+    step_count = step_count + gradient_offset
+
+    return step_count * step_size
 
 
 def calc_step_size(img, steps, max_frame_size, axis=0):
@@ -112,3 +115,29 @@ def calc_step_size(img, steps, max_frame_size, axis=0):
         step_size = np.ceil((height * max_frame_size) / steps)
 
     return int(step_size)
+
+
+def find_following_max(gradients):
+    """
+    Finds the next maximum after the global minimum. If the maximum is to far away from the minimum,
+    the minimum is returned.
+
+    :param gradients: array - The gradients.
+    :return: int - The steps needed to find the following maximum.
+    :rtype int
+    """
+    argmin = np.argmin(gradients)
+
+    step_count = argmin
+
+    length = len(gradients) - 1
+
+    while step_count < length and gradients[step_count] <= gradients[step_count + 1]:
+        if gradients[step_count] == gradients[step_count + 1]:
+            argmin = step_count + 1
+        step_count += 1
+
+    if step_count - argmin > np.ceil(len(gradients) * 0.2):
+        step_count = argmin
+
+    return step_count

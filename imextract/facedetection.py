@@ -3,12 +3,15 @@ import cv2
 
 def detect_faces(img, frontal_classifier, profile_classifier, scale, neighbors):
     """
-    TODO: Comment
-    :param img:
-    :param frontal_classifier:
-    :param profile_classifier:
-    :param scale:
-    :param neighbors:
+    This detects faces in the given image. It detects faces in profile and frontal view.
+    If the two found faces are to near to each other the profile detection is removed to avoid a
+    double detection of the same face.
+
+    :param img: ndarray - The image to detect faces.
+    :param frontal_classifier: The Casscade classifier for frontal faces.
+    :param profile_classifier: The Casscade classifier for profile faces.
+    :param scale: TODO:Comment
+    :param neighbors: TODO:Comment
     :return:
     """
 
@@ -40,11 +43,12 @@ def detect_faces(img, frontal_classifier, profile_classifier, scale, neighbors):
 
 def mark_faces(img, faces_list):
     """
-    TODO: Comment
+    The found faces in the list of faces are marked with a green rectangle in the image.
 
-    :param img:
-    :param faces_list:
-    :return:
+    :param img: ndarray - The image to mark the faces.
+    :param faces_list: arraay - The detected faces in the image.
+    :return: The image with the marked faces.
+    :rtype ndarray
     """
 
     if faces_list:
