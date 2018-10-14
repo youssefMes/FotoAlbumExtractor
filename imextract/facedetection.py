@@ -10,8 +10,8 @@ def detect_faces(img, frontal_classifier, profile_classifier, scale, neighbors):
     :param img: ndarray - The image to detect faces.
     :param frontal_classifier: The Casscade classifier for frontal faces.
     :param profile_classifier: The Casscade classifier for profile faces.
-    :param scale: TODO:Comment
-    :param neighbors: TODO:Comment
+    :param scale: specifies how much the image size is reduced at each image scal
+    :param neighbors: specifies how many neighbors each candidate rectangle should have to retain it.
     :return:
     """
 
@@ -32,7 +32,7 @@ def detect_faces(img, frontal_classifier, profile_classifier, scale, neighbors):
             y_p = profile[1]
             w_p = profile[2]
             h_p = profile[3]
-            # checks if faces are to close to each other
+            # checks if faces are too close to each other
             if float(abs(y_p - y)) < h_p / 3 and float(abs(x_p - x)) < w_p / 3:
                 del profile_list[i]
 

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 def remove_boarder(img, steps=25, max_window_size=0.1, gradient_offset=4):
     """
-    Calculates the needed margins to remove the outlining boarder of the image.
+    Calculates the needed margins to remove the outlining border of the image.
 
     :param img: ndarray - The image.
     :param steps: int - Each step increases the window where the best margin is found.
