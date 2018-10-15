@@ -1,0 +1,101 @@
+\documentclass[twoside,12pt,a4paper]{scrreprt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{babelbib}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{graphicx} % Zum Einbinden von Grafiken
+\usepackage[dvipsnames]{xcolor}
+\usepackage[colorlinks=true,linkcolor=Black,citecolor=MidnightBlue,urlcolor=MidnightBlue]{hyperref}
+\usepackage[all]{hypcap}
+\usepackage{pgfplots} \pgfplotsset{compat=1.9}
+\usepackage{helvet} % Schönere SansSerif-Schrift
+\usepackage{times}  % Schönere Serif-Schrift
+
+\usepackage{blindtext} % sollte am Ende nicht mehr benötigt werden ;)
+
+\pagestyle{headings}
+
+\graphicspath{ {figures/} } % Pfad-Prefix für einzubindende Grafiken. Es sind auch mehrere Pfade möglich, diese müssen jeweils in eigenen {Klammern} stehen.
+
+\setkomafont{disposition}{\normalcolor\bfseries} % überall Serifen verwenden
+% oder
+%\renewcommand{\familydefault}{\sfdefault} % überall Sans-Serif verwenden
+
+% PDF-Optionen (werden in den Dateieigenschaften angezeigt)
+\hypersetup{
+pdftitle={Automatisches ausschneiden von Bildern aus Fotoalben},
+pdfauthor={Mariella Dreißig, Tom Eckardt, Stefan Bergmann},
+pdfsubject={Dokumentation Praktikum Bildverarbeitung},
+pdfpagelayout=TwoColumnRight
+}
+
+%%% Eigene Makros
+\newcommand{\qq}[1]{\glqq #1\grqq} % \qq{Text in Anführungszeichen}
+
+\begin{document}
+
+%%% Titelseite
+\begin{titlepage}
+\begin{center}
+\LARGE Eberhard Karls Universität Tübingen\\
+\large Mathematisch-Naturwissenschaftliche Fakultät \\
+Wilhelm-Schickard-Institut für Informatik\\
+[3cm]
+\huge Dokumentation Praktikum Bildverarbeitung\\
+[2cm]
+\Large\textbf{Automatisches ausschneiden von Bildern aus Fotoalben}\\
+[1.5cm]
+\large Mariella Dreißig, Tom Eckardt, Stefan Bergmann\\
+[0.5cm]
+14.10.2018\\
+\vfill
+\small\textbf{Betreuer}\\[0.3cm]
+\large Name Betreuer\\
+\end{center}
+\end{titlepage}
+
+%%% Titelrückseite: Bibliographische Angaben
+\thispagestyle{empty}
+\vspace*{\fill}
+\textbf{Mariella Dreißig, Tom Eckardt, Stefan Bergmann:}\\
+\emph{Automatisches ausschneiden von Bildern aus Fotoalben}\\
+Dokumentation Praktikum Bildverarbeitung \\
+Eberhard Karls Universität Tübingen\\
+\newpage
+
+%%% Zusammenfassung (Abstract), hier aus externer Datei eingebunden
+\input{chapters/zusammenfassung.tex}
+\newpage
+
+%%% Inhaltsverzeichnis
+\KOMAoption{toc}{listof,bib} % Abbildungs-/Tabellenverzeichnis, Literaturverzeichnis aufnehmen
+\tableofcontents\label{toc}
+\cleardoublepage
+
+%%% Hauptteil (mit \input{dateiname} wird die Datei 'dateiname' eingebunden)
+\input{chapters/einleitung.tex}
+\cleardoublepage
+
+\input{chapters/hintergrundentfernung.tex}
+\cleardoublepage
+
+\input{chapters/rahmenentfernung.tex}
+\cleardoublepage
+
+\input{chapters/gesichtserkennung.tex}
+\cleardoublepage
+
+\input{chapters/evaluation.tex}
+\cleardoublepage
+
+\input{chapters/anleitung.tex}
+\cleardoublepage
+
+%%% Literaturverzeichnis, lädt die Datei literatur.bib
+\bibliographystyle{babplain} % "babplain" benötigt das Paket babelbib
+\bibliography{literatur}
+\cleardoublepage
+
+\end{document}
