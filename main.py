@@ -119,15 +119,6 @@ def main(args, config):
     :param args: dictionary - The Arguments given by the start of the programm.
     :param config: dictionary - The configuration of the config file.
     """
-
-    path_frontal_classifier = config.get('FaceDetection', 'CascadePathFrontal')
-    path_profile_classifier = config.get('FaceDetection', 'CascadePathProfile')
-    if not path_frontal_classifier or not path_profile_classifier:
-        sys.exit("Error in the config file!")
-
-    frontal_classifier = cv2.CascadeClassifier(path_frontal_classifier)
-    profile_classifier = cv2.CascadeClassifier(path_profile_classifier)
-
     img = cv2.imread(args.image, cv2.IMREAD_COLOR)
 
     if img is None:
@@ -135,21 +126,28 @@ def main(args, config):
 
     if args.compare:
         compare_images(img, args.compare)
-        return
+    else:
+        path_frontal_classifier = config.get('FaceDetection', 'CascadePathFrontal')
+        path_profile_classifier = config.get('FaceDetection', 'CascadePathProfile')
+        if not path_frontal_classifier or not path_profile_classifier:
+            sys.exit("Error in the config file!")
 
-    full_name = os.path.basename(args.image)
-    name = os.path.splitext(full_name)[0]
+        frontal_classifier = cv2.CascadeClassifier(path_frontal_classifier)
+        profile_classifier = cv2.CascadeClassifier(path_profile_classifier)
 
-    cropped_images = get_background_extracted_images(img, config)
+        full_name = os.path.basename(args.image)
+        name = os.path.splitext(full_name)[0]
 
-    for i, image in enumerate(cropped_images):
+        cropped_images = get_background_extracted_images(img, config)
 
-        img = get_frame_extracted_image(image, config)
+        for i, image in enumerate(cropped_images):
 
-        if args.face:
-            get_detected_faces(img, frontal_classifier, profile_classifier, config)
+            img = get_frame_extracted_image(image, config)
 
-        cv2.imwrite(args.result + '/' + name + '_' + str(i) + '.png', img)
+            if args.face:
+                get_detected_faces(img, frontal_classifier, profile_classifier, config)
+
+            cv2.imwrite(args.result + '/' + name + '_' + str(i) + '.png', img)
 
 
 if __name__ == "__main__":

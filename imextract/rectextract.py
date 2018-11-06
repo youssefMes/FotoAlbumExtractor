@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 
 
 def remove_boarder(img, steps=25, max_window_size=0.1, gradient_offset=4):
@@ -33,8 +32,8 @@ def find_margin(canny, side="top", steps=25, max_frame_size=0.1, gradient_offset
     """
     This method creates a window on the given side. The window is increased step by step with the size calculated by the
     maximum frame size and the number of steps. For each window the number of white pixel is counted and saved.
-    In the end the gradients between those counted pixel is calculated and the smallest gradient gives the number
-    of needed steps.
+    In the end the gradients between those counted pixel is calculated and the smallest gradient is used to find the
+    following maximum. This maximum gives the steps needed for the margin.
 
     :param canny: ndarray - Image created by canny operation
     :param side: string - ["top", "bottom", "left", "right"] The side where the frame is searched
@@ -78,17 +77,6 @@ def find_margin(canny, side="top", steps=25, max_frame_size=0.1, gradient_offset
 
     # calculate the gradients of the results array with the offset
     gradients = np.gradient(results)[gradient_offset:]
-
-    # Plot the increasing feature count and the gradients
-
-    plt.title(side)
-    plt.plot(results)
-    plt.plot(np.gradient(results))
-    plt.show()
-
-    # get the last minimum not the first in the array
-    # last_min = len(gradients) - np.argmin(gradients[::-1])
-    # last_min += gradient_offset
 
     step_count = find_following_max(gradients)
     step_count = step_count + gradient_offset

@@ -71,10 +71,6 @@ def compare_feature(truth, img, max_features, threshold):
 
     # compare matched features to compute differece
     for i, match in enumerate(matches):
-        print("Distance: {}".format(match.distance) )
-        print("QueriIdx: {}".format(match.queryIdx) )
-        print("TrainIdx: {}".format(match.trainIdx) )
-        print("===============================")
 
         if match.distance < threshold:
             # uses image center to compare the feature position
