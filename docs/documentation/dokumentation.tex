@@ -1,4 +1,4 @@
-\documentclass[twoside,12pt,a4paper]{scrreprt}
+\documentclass[12pt,a4paper]{scrreprt}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
@@ -12,8 +12,7 @@
 \usepackage{pgfplots} \pgfplotsset{compat=1.9}
 \usepackage{helvet} % Schönere SansSerif-Schrift
 \usepackage{times}  % Schönere Serif-Schrift
-
-\usepackage{blindtext} % sollte am Ende nicht mehr benötigt werden ;)
+\usepackage[onehalfspacing]{setspace}
 
 \pagestyle{headings}
 
@@ -35,7 +34,6 @@ pdfpagelayout=TwoColumnRight
 \newcommand{\qq}[1]{\glqq #1\grqq} % \qq{Text in Anführungszeichen}
 
 \begin{document}
-
 %%% Titelseite
 \begin{titlepage}
 \begin{center}
@@ -49,10 +47,10 @@ Wilhelm-Schickard-Institut für Informatik\\
 [1.5cm]
 \large Mariella Dreißig, Tom Eckardt, Stefan Bergmann\\
 [0.5cm]
-14.10.2018\\
+\today\\
 \vfill
 \small\textbf{Betreuer}\\[0.3cm]
-\large Name Betreuer\\
+\large Andreas Karge, Prof. Andreas Schilling\\
 \end{center}
 \end{titlepage}
 
@@ -65,8 +63,21 @@ Dokumentation Praktikum Bildverarbeitung \\
 Eberhard Karls Universität Tübingen\\
 \newpage
 
+
 %%% Zusammenfassung (Abstract), hier aus externer Datei eingebunden
 \input{chapters/zusammenfassung.tex}
+%% requirements
+
+%% es soll ja im wesentlichen eher eine Ausarbeitung zum Thema sein: also Problemstellung/Ausprägung Input-Daten, Recherche/existierende Ansätze, eigner Lösungsansatz, auftretende Probleme/Iteration der Lösung, Testdaten/quantitative Evaluierung, Perspektive
+
+%% also weniger eine Dokumentation, die Doku wäre eher ein Appendix oder im Repository neben Code und Test anzusiedeln, die Doku sollte dann die in/out Schnittstellen Parameter dokumentieren, die Codebestandteile können zur Ausarbeitung referenziert werden
+
+%% 10 Seiten Ausarbeitung wäre gut
+
+%% der Algorithmus sollte auch als Diagramm visualisiert werden und die einzelnen Bestandteile im Text mit Referenz auf Code besprochen werden
+
+%% ihr habt ja von ca. 20 Freiheitsgraden gesprochen, diese sollten erläutert werden, Diskussion zukünftiger Ansätze/was wurde nicht untersucht
+
 \newpage
 
 %%% Inhaltsverzeichnis
@@ -85,7 +96,7 @@ Eberhard Karls Universität Tübingen\\
 \cleardoublepage
 
 \input{chapters/gesichtserkennung.tex}
-\cleardoublepage
+\newpage
 
 \input{chapters/evaluation.tex}
 \cleardoublepage

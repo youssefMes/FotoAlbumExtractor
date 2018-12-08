@@ -1,1 +1,16 @@
 \chapter{Gesichtserkennung}
+% 2D BV, Machine Learning -> viola-jones-methode (haar-wavelets)
+% opencv Funktionsweise (Dokumentation)
+% frontal, profile
+% probleme, Ergebnisse
+Die Aufgabenstellung beinhaltet, in den extrahierten Fotos Gesichter zu erkennen. Hier muss die Gesichtserkennung (in der Fachliteratur "Face Detection") von der Wiedererkennung von bereits identifizierten Gesichtern (in der Fachliteratur "Face Recognition") unterschieden werden. In der vorliegenden Arbeit geht es ausschließlich darum, die Position von Gesichtern in den eingescannten Fotos zu erkennen und nicht, bereits erkannte Gesichter wiederzuerkennen oder zuzuordnen \footnote{Aufgrund der geringen Datenmenge und der schlechten Qualität der alten Fotos ist es nicht möglich, Gesichter wiederzuerkennen.}.\\
+In der klassischen Bildverarbeitung wurden lange einfache 2D-Verfahren verwendet, um Gesichter in Bildern zu erkennen (\cite{Kees2012}, \cite{Wachter2001}). Beim Template Matching werden beispielsweise Vorlagen (von Teilen) von Gesichtern erzeugt um diese dann im Anwendungsfall mit den Zielbildern zu vergleichen. Dieses Verfahren ist nicht sehr robust, besonders bei sich verändernden Lichtverhältnissen, aber gleichzeitig extrem rechenaufwändig. Eine einfachere Methode der Gesichtserkennung in der klassischen Bildverarbeitung ist die Nutzung von geometrischen Merkmalen in den Gesichtern. Hierbei werden beispielsweise Grauwerte in einem bestimmten Bereich des Bildes aufsummiert oder Gradientenoperatoren zur horizontalen und vertikalen Kantenerkennung angewandt. So kann die Ausrichtung, die relative Lage und ähnliche Merkmale der Nase, der Augen und des Munden identifiziert und zusammen als Gesicht klassifiziert werden. Doch auch diese Methode ist rechen- und zeitintensiv. Deswegen wird häufig eher auf komplexere Methoden zur Gesichtserkennung gesetzt, wie beispielsweise das Elastic Bunch Graph Matching, das eine robuste Waveletanalyse nutzt (\cite{Wiskott1999}) oder die auf der Hauptkomponentenanalyse basierende Eigenfaces-Methode (\cite{doi:10.1162/jocn.1991.3.1.71}). Weiterentwicklungen dieser beiden Methoden werden heute noch eingesetzt, obwohl die Ansätze schon vergleichsweise alt sind.
+% https://en.wikipedia.org/wiki/Viola%E2%80%93Jones_object_detection_framework 
+% https://de.wikipedia.org/wiki/Viola-Jones-Methode
+
+% inspiration 
+	% https://www.heise.de/select/ix/2017/11/1509393829637286
+	% https://eliteinformatiker.de/2013/08/28/eine-einfache-gesichtserkennung-mit-opencv-und-scikit-learn
+	% https://realpython.com/face-recognition-with-python/
+	% https://www.superdatascience.com/opencv-face-detection/
+% opencv doku https://docs.opencv.org/3.4/d7/d8b/tutorial_py_face_detection.html
