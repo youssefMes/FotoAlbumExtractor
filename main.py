@@ -91,14 +91,16 @@ def get_background_extracted_images(img, config):
     return valid_cropped_images
 
 
-def get_detected_faces(img, frontal_classifier, profile_classifier, config):
+def get_detected_faces(img, frontal_classifier, profile_classifier, config, path, name):
     """
-    Detects the faces in the cut out images and marks them in the resulting image with a red rectangle.
+    Detects the faces in the cut out images, marks them in the resulting image with a green rectangle and saves them seperately.
 
     :param img: ndarray - The image to detect faces.
     :param frontal_classifier: The Casscade Classifier to detect frontal faces.
     :param profile_classifier: The Casscade Classifier to detect faces in profile.
     :param config: dictionary - The configuration of the config file.
+    :param path: Path to where the detected faces should be stored.
+    :param name: Notation of the current image.
     :return:
     """
 
@@ -109,7 +111,19 @@ def get_detected_faces(img, frontal_classifier, profile_classifier, config):
 
     faces_list = fd.detect_faces(img, frontal_classifier, profile_classifier, scale, neighbors)
 
-    return fd.mark_faces(img, faces_list)
+    if faces_list:
+        faces_path = path + '/faces/'
+        if not os.path.exists(faces_path):
+            os.makedirs(faces_path)
+        j = 0
+        for (x, y, w, h) in faces_list:
+            sub_face = img[y:y+h, x:x+w]
+            cv2.imwrite(faces_path + name + '_' + str(j) + ".png", sub_face)
+            j += 1
+
+        fd.mark_faces(img, faces_list)
+
+    return
 
 
 def main(args, config):
@@ -145,7 +159,7 @@ def main(args, config):
             img = get_frame_extracted_image(image, config)
 
             if args.face:
-                get_detected_faces(img, frontal_classifier, profile_classifier, config)
+                get_detected_faces(img, frontal_classifier, profile_classifier, config, args.result, name + '_' + str(i))
 
             cv2.imwrite(args.result + '/' + name + '_' + str(i) + '.png', img)
 
