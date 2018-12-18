@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 
 
-def remove_boarder(img, steps=25, max_window_size=0.1, gradient_offset=4):
+def remove_border(img, steps=25, max_window_size=0.1, gradient_offset=4):
     """
     Calculates the needed margins to remove the outlining border of the image.
 

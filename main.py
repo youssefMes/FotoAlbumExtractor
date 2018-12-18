@@ -41,7 +41,7 @@ def get_frame_extracted_image(img, config):
     if not max_window_size or not steps or not offset:
         sys.exit("Error in the config file!")
 
-    img = re.remove_boarder(img, steps, max_window_size, offset)
+    img = re.remove_border(img, steps, max_window_size, offset)
 
     return img
 
@@ -141,14 +141,6 @@ def main(args, config):
     if args.compare:
         compare_images(img, args.compare)
     else:
-        path_frontal_classifier = config.get('FaceDetection', 'CascadePathFrontal')
-        path_profile_classifier = config.get('FaceDetection', 'CascadePathProfile')
-        if not path_frontal_classifier or not path_profile_classifier:
-            sys.exit("Error in the config file!")
-
-        frontal_classifier = cv2.CascadeClassifier(path_frontal_classifier)
-        profile_classifier = cv2.CascadeClassifier(path_profile_classifier)
-
         full_name = os.path.basename(args.image)
         name = os.path.splitext(full_name)[0]
 
@@ -159,6 +151,16 @@ def main(args, config):
             img = get_frame_extracted_image(image, config)
 
             if args.face:
+
+                path_frontal_classifier = config.get('FaceDetection', 'CascadePathFrontal')
+                path_profile_classifier = config.get('FaceDetection', 'CascadePathProfile')
+
+                if not path_frontal_classifier or not path_profile_classifier:
+                    sys.exit("Error in the config file!")
+
+                frontal_classifier = cv2.CascadeClassifier(path_frontal_classifier)
+                profile_classifier = cv2.CascadeClassifier(path_profile_classifier)
+
                 get_detected_faces(img, frontal_classifier, profile_classifier, config, args.result, name + '_' + str(i))
 
             cv2.imwrite(args.result + '/' + name + '_' + str(i) + '.png', img)
