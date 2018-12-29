@@ -7,10 +7,7 @@
 
 \section{Benutzte Technologien}
 % genutzte methoden, toolboxen, programmiersprachen
-python==3.7.1 \\
-numpy==1.14.2 \\
-opencv-python==3.4.0.12 \\
-scikit-image==0.13.1
+Für die Entwicklung dieser Software wurde als Programmiersprache Python 3.6 verwendet zusammen mit der Bibliothek numpy in der Version 1.14.2. Numpy ermöglicht die schnellere Berechnung von Matrizen und wird für die Bibliothek OpenCV in der Version 3.4.0.12 benötigt. OpenCV bietet eine reihe von Algorithmen für die Bildbearbeitung, die in diesem Programm verwendet wurden. Um eine Auswertung anzufertigen wurde aus der Bibliothek SciKit-image 0.13.1 einige Methoden verwendet.
 
 \section{Programmaufbau}
 Das Programm teilt sich in fünf Hauptkomponenten auf. Die erste ist in der \textit{main.py} zu finden, die das Programm startet und die anderen Komponenten ausführt. Die zweite Komponente kümmert sich um das entfernen des allgemeinen Hintergrunds und ist in der \textit{backgroundremover.py} zu finden. In dieser Komponente werden die eigentlichen Fotos aus dem Fotoalbum grob ausgeschnitten. Danach wird in der nächsten Komponente für jedes Foto der Rahmen der entfernt falls ein Rahmen vorhanden ist. Das entfernen des Rahmens geschieht in der \textit{rectextract.py}. Die letzte Komponente ermöglicht es Gesichter in den Ausgeschnittenen Bildern zu erkennen, dies geschieht in der \textit{facedetection.py}. Möchte man die ausgeschnittenen Bilder mit Beispielbildern vergleichen, so kann man die letzte Komponente in der Datei \textit{compare.py} verwenden. Mit deren Hilfe Metriken aufgestellt werden zum Vergleich der Bilder. In dem Flussdiagramm \ref{fig:flowchart} ist der genaue Ablauf des Programmes dargestellt. \\

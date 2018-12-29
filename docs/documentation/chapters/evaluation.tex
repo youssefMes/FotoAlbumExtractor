@@ -2,10 +2,45 @@
 
 \section{Metriken zur Auswertung}
 \subsection{Bildgröße}
+Da es in dem Projekt um das Ausschneiden von Bildern geht ist die Bildgröße eine nahe liegende Metrik um die Genauigkeit unserer Software zu messen. Die Größe wird berechnet indem die Höhe mit der Breite multipliziert wird. Von der so ermittelten Größe des ausgeschnittenen Bildes wird die Größe des Ground Truth Bildes abgezogen. Aus dieser Differenz wird der Prozentuale unterschied zum Ground Truth Bild berechnet. Sollte das Ergebnis negativ sein ist das ausgeschnittene Bild kleiner als der Ground Truth.
+   
 \subsection{Bildmerkmale}
+Eine weitere Metrik ist das erkennen gleicher Bildmerkmale. Dazu wird der patent freie ORB (Orientatet FAST and Rotated BRIEF) detektor von OpenCV verwendet der Rotations invariant ist. ORB ist eine fusion zwischen dem FAST Schlüsselpunkt Detektor and BRIEF Beschreibung der Schlüsselpunkte mit vielen Modifikationen um die Geschwindigkeit des Algorithmus zu verbessern (\cite{OpenCVORB}). Die so erkannten Merkmale werden dann der reihe nach anhand der Distanz zum Bildzentrum verglichen. Es wird für jedes erkannte Bildmerkmal die Distanz zum Zentrum des dazu gehörigen Bildes berechnet und das dann mit den Ergebnissen des Ground Truth verglichen. Solange zwischen den beiden Merkmalen keine zu großer Unterschied in der Distanz ist werden sie als gleich angesehen. Durch dieses Verfahren kann erkannt werden das sich der Ausschnitt des ausgeschnittenen Bildes an der selben stelle befindet, wie der Ground Truth und nicht nur die gleiche Größe ausgeschnitten wurde.
+
 \subsection{Struktureller Ähnlichkeit (SSIM)}
+Um ein Bild auf Gleichheit zu untersuchen verwenden wir den Strukturellen Ähnlichkeitsindex (Structural Similarity index, SSIM). Dieser berechnet die Ähnlichkeit zwischen verschiedenen Bildausschnitten mit folgender Gleichung:
+$$
+SSIM(x,y) = \frac{(2 \mu_x \mu_y + c_1)(\sigma_{xy} + c_2)}{(\mu^2_x + \mu^2_y + c_1)(\sigma^2_x + \sigma^2_y + c_2)}
+$$ 
+mit $\mu$ als Durchschnitt und $\sigma$ als Varianz bzw. Kovarianzmatrix des Bildausschnittes. $c$ sind da um die Division zu stabilisieren (\cite{Wang2004}). Das Verfahren lässt sich nur auf gleich große Bilder anwenden. Aus diesem Grund verkleinern wir die Bilder mit einer linearen Interpolation auf eine Größe von 64 x 64 Pixeln. Auf die so verkleinerten Bilder wird dann der SSIM angewandt. Um so näher das Ergebnis an 1 ist um so ähnlicher sind die beiden Bilder. 
 
 \section{Ausgeschnittene Bilder}
+In der Tabelle \ref{tab:metrics} sind die Ergebnisse für einige der Testbilder dargestellte den direkten Vergleich kann man in Abbildung ?? sehen dort sind die Bilder nebeneinander aufgezeigt. 
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{c|ccc}
+	Bild & Größe & Merkmale & SSIM \\ \hline 
+	01 & 1.92 & 3.64 & 0.82 \\
+	02 & 1.60 & 2.39 & 0.77 \\
+	03 & -5.52 & 10.12 & 0.36 \\
+	04 & 3.15 & 16.54 & 0.68 \\ 
+	05 & 1.48 & 2.65 & 0.81 \\ \hline
+	06 & -4.42 & 23.58 & 0.55 \\ 
+	07 & 2.96 & 4.40 & 0.80 \\
+	08 & 8.82 & 8.07 & 0.39 \\
+	09 & -1.24 & 2.06 & 0.70 \\
+	10 & -0.58 & 5.57 & 0.76 \\ \hline
+	11 & -4.35 & 28.46 & 0.49 \\
+	12 & 2.96 & 1.74 & 0.80 \\
+	13 & 1.26 & 3.24 & 0.88 \\
+	14 & 3.01 & 1.94 & 0.72 \\
+	15 & 0.76 & 19.51 & 0.60 
+	\end{tabular}
+	\caption{Ergebnisse der Vergleichsmetriken der ausgeschnittenen Bilder.}
+	\label{tab:metrics}
+\end{table}
+
 
 \section{Gesichtserkennung}
 Die von OpenCV mitgelieferten Methoden zur Gesichtserkennung auf Bildern funktioniert grundsätzlich gut. Sie ist einfach anwendbar, hat eine vertretbare Laufzeit (der Algorithmus läuft nur einige Sekunden auf einer ganzen eingescannten Albumseite) und erkennt zumindest einen Großteil der Gesichter in den Fotos. \\
