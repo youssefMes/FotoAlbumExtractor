@@ -163,6 +163,8 @@ def main(args, config):
 
                 get_detected_faces(img, frontal_classifier, profile_classifier, config, args.result, name + '_' + str(i))
 
+            if not os.path.exists(args.result):
+                os.makedirs(args.result)
             cv2.imwrite(args.result + '/' + name + '_' + str(i) + '.png', img)
 
 
