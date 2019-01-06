@@ -15,7 +15,6 @@ $$
 mit $\mu$ als Durchschnitt und $\sigma$ als Varianz bzw. Kovarianzmatrix des Bildausschnittes. $c$ sind da um die Division zu stabilisieren (\cite{Wang2004}). Das Verfahren lässt sich nur auf gleich große Bilder anwenden. Aus diesem Grund verkleinern wir die Bilder mit einer linearen Interpolation auf eine Größe von 64 x 64 Pixeln. Auf die so verkleinerten Bilder wird dann der SSIM angewandt. Um so näher das Ergebnis an 1 ist um so ähnlicher sind die beiden Bilder. 
 
 \section{Ausgeschnittene Bilder}
-In der Tabelle \ref{tab:metrics} sind die Ergebnisse für einige der Testbilder dargestellte den direkten Vergleich kann man in Abbildung ?? sehen dort sind die Bilder nebeneinander aufgezeigt. 
 
 \begin{table}[h]
 	\centering
@@ -40,6 +39,25 @@ In der Tabelle \ref{tab:metrics} sind die Ergebnisse für einige der Testbilder 
 	\caption{Ergebnisse der Vergleichsmetriken der ausgeschnittenen Bilder.}
 	\label{tab:metrics}
 \end{table}
+
+In der Tabelle \ref{tab:metrics} sind die Ergebnisse für einige der Testbilder im Vergleich zu Ground Truth Bildern dargestellt. Die Ground Truth Bilder wurden per Hand ausgeschnitten ohne die Bilder zu rotieren oder andere Veränderungen vorzunehmen. 
+Den direkten Vergleich zwischen ausgeschnittenem Bild und Ground Truth kann man in Abbildung \ref{fig:compare_pos} sehen dort ist das Ergebnis von Bild 1 aus der Tabelle dargestellt. In Abbildung \ref{fig:compare_neg} kann man das Ergebnis von Bild 11 sehen, bei dem die Erkennung des Rahmens schwer gefallen ist durch die gegebene Rotation des Bildes. 
+
+\begin{figure}[h]
+ 	\centering
+	\includegraphics[width=0.4\linewidth]{images/compare/01_0.png} \quad
+	\includegraphics[width=0.4\linewidth]{images/compare/gt_01_0.png}
+	\caption{Links ist das Ergebnis Bild im Vergleich zum Ground Truth Bild rechts davon. Das verglichene Bild ist Bild 01 aus der Tabelle \ref{tab:metrics}}
+	\label{fig:compare_pos}
+\end{figure}
+
+\begin{figure}[h]
+ 	\centering
+	\includegraphics[width=0.3\linewidth]{images/compare/03_0.png} \quad
+	\includegraphics[width=0.33\linewidth]{images/compare/gt_03_0.png}
+	\caption{Links ist das Ergebnis Bild im Vergleich zum Ground Truth Bild rechts davon. Das verglichene Bild ist Bild 11 aus der Tabelle \ref{tab:metrics}}
+	\label{fig:compare_neg}
+\end{figure}
 
 
 \section{Gesichtserkennung}

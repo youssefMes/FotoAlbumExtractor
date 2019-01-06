@@ -1,3 +1,105 @@
 \chapter{Benutzung und Konfiguration}
-% workflow
-% parameterbeschreibung
+
+\section{Ausführen des Programmes}
+
+Für die Installation ist Python 3.6 notwendig mit dem Paketmanager Pip. Um die Abhängigkeiten zu installieren muss man mit der Kommandozeile in das Hauptverzeichnis navigieren indem sich die Datei \textit{requirements.txt} befindet. Dort führt man folgenden Befehl aus: 
+\begin{lstlisting}
+pip3 install -r requirements.txt
+\end{lstlisting}
+Pip installiert nun sämtliche Abhängigkeiten, die zur Ausführung des Programmes benötigt werden. Um das Programm dann auszuführen genügt folgender Befehl:
+\begin{lstlisting}
+python3 main.py /path/to/photo/album/page.tif
+\end{lstlisting}
+Man kann dann mit Parametern steuern, wo die ausgeschnittenen Fotos gespeichert werden sollen, wo sich die Konfigurationsdatei befindet, ob man Gesichter in den Fotos detektiert haben möchte oder ob man ein Bild mit einem Groud Truth Bild vergleichen möchte. Die Anleitung zum Ausführen dieser Befehle erhält man mit folgendem Befehl:
+\newpage
+\begin{lstlisting}
+python3 main.py -h 
+  usage: main.py [-h] [--result RESULT] [--compare COMPARE] 
+                 [--config CONFIG] [--face] image
+
+  positional arguments:
+    image              path to the image of the photo album page
+
+  optional arguments:
+    -h, --help         show this help message and exit
+    --result RESULT    path to the directory to store the 
+                       results
+    --compare COMPARE  path to the image to compare 
+                       the given image to
+    --config CONFIG    path to the config file
+    --face             enables face detection
+\end{lstlisting}  
+
+\section{Konfigurationsdatei und Parameter}
+In der Konfigurationsdatei \textit{config} befinden sich Parameter mit denen man das Programm steuern kann. Sämtliche Parameter die man setzen kann sind im folgenden aufgeführt mit einer Beschreibung was mit diesem Parameter gesteuert wird.
+
+%or \small or \footnotesize etc.
+
+\begin{lstlisting}
+#----------------------------
+# Parameter for removing the background
+#----------------------------
+[BackgroundRemover]
+# The size of the searched spot in the background of the images
+# to start the flood fill algorithm. The higher the value, 
+# the slower the search but up to a certain size it is more stable.
+SpotSize = 200
+
+# The threshold around the primary background color, 
+# which still should belong to the background to create a
+# binary image which is separating the background 
+# colors from the rest.
+BinaryThreshold = 25
+
+# The size an image must at least have to be considered as an 
+# image.
+MinImageSize = -100
+
+# The maximum relation between the width and the height of an 
+# image to prevent the finding of strips.
+MaxRelationImageDimensions = 2.5
+
+# The padding with which image is cut out of the original photo.
+ImagePadding = 10
+
+# The necessary amount of features needed to be regarded as image. 
+# To check if the found image is legit.
+FeatureThreshold = 10
+\end{lstlisting}
+\begin{lstlisting}
+#----------------------------
+# Parameter for extracting the image
+#----------------------------
+[ImageExtraction]
+# The maximum size of the window within the program searches
+# a frame around the image.
+MaxWindowSize = 0.1
+
+# The number of steps to search for the frame. 
+# The maximum window size and the number of steps determine 
+# the size of the steps fitting to the image size.
+Steps = 25
+
+# The ignored steps. This is done to prevent the program 
+# of finding the already given image boarder.
+Offset = 4
+\end{lstlisting}
+\newpage	
+\begin{lstlisting}
+#----------------------------
+# Parameter for the face detection
+#----------------------------
+[FaceDetection]
+# path for the Haarcascade files for frontal faces
+CascadePathFrontal = ./imextract/cascade/haarcascade_frontalface.xml
+
+# path for the Haarcascade files for profile faces
+CascadePathProfile = ./imextract/cascade/haarcascade_profileface.xml
+
+# specifies how much the image size is reduced at each image scale
+ScaleFactor = 1.2
+
+# specifies how many neighbors each candidate rectangle 
+# should have to retain it
+Neighbors = 5
+\end{lstlisting}

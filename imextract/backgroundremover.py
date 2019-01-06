@@ -52,14 +52,14 @@ def generate_binary_background_image(img, background_color, threshold=25):
     :param img: this is the image
     :param background_color: this is the background color
     :param threshold: the threshold around the primary background color, which still should belong to the background.
-    :returns: binary image. 
-    :rtype: array  
+    :returns: binary image.
+    :rtype: array
     """
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret, mask1 = cv2.threshold(gray, background_color + threshold, 255, 0)
-    ret, mask2 = cv2.threshold(gray, background_color + threshold, 255, 0)
-    combined = cv2.bitwise_not(cv2.bitwise_or(mask1, mask2))
+    ret, mask2 = cv2.threshold(gray, background_color - threshold, 255, 0)
+    combined = cv2.bitwise_not(cv2.bitwise_and(mask1, mask2))
 
     return combined
 
@@ -84,34 +84,6 @@ def separate_background(binary_background_img, background_location):
     im_floodfill[im_floodfill == 128] = 0
 
     return im_floodfill
-
-  
-def generate_binary_extended_edge_image(img):
-    """
-    Returns a binary image, at which all the edges are white.
-    For a better performance and noise reduction the image is downsampled and bilateral filter.
-    The edges are detected by a comparision of the original image and a blurred one.
-    By this small gaps in the edges are also detected.
-
-    :param img: binary version of the image
-    :returns: binary image where the edges are white spoches and the rest is black. 
-    :rtype: array  
-    """
-
-    temp = cv2.resize(img, (0, 0), fx=0.45, fy=0.45)
-    temp = cv2.bilateralFilter(temp, 15, 75, 75)
-
-    blur1 = cv2.GaussianBlur(temp, (3, 3), 0)
-    blur2 = cv2.GaussianBlur(temp, (15, 15), 0)
-
-    gradients = blur1 - blur2
-
-    kernel = np.zeros((15, 15), np.uint8)
-    kernel = cv2.circle(kernel, (7, 7), 5, 1, -1)
-
-    gradients = cv2.morphologyEx(gradients, cv2.MORPH_CLOSE, kernel)
-
-    return cv2.resize(gradients, (img.shape[1], img.shape[0]))
 
 
 def check_for_features(img, threshold=10):

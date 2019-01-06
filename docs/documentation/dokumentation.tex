@@ -9,6 +9,7 @@
 \usepackage{subcaption}
 \usepackage{microtype}
 \usepackage{amsmath}
+\usepackage{listings}
 \usepackage{graphicx} % Zum Einbinden von Grafiken
 \usepackage[dvipsnames]{xcolor}
 \usepackage[colorlinks=true,linkcolor=Black,citecolor=MidnightBlue,urlcolor=MidnightBlue]{hyperref}
@@ -25,6 +26,11 @@
 \setkomafont{disposition}{\normalcolor\bfseries} % überall Serifen verwenden
 % oder
 %\renewcommand{\familydefault}{\sfdefault} % überall Sans-Serif verwenden
+
+\lstset {
+frame = single,
+basicstyle=\small
+}
 
 % PDF-Optionen (werden in den Dateieigenschaften angezeigt)
 \hypersetup{
@@ -70,17 +76,6 @@ Eberhard Karls Universität Tübingen\\
 
 %%% Zusammenfassung (Abstract), hier aus externer Datei eingebunden
 \input{chapters/zusammenfassung.tex}
-%% requirements
-
-%% es soll ja im wesentlichen eher eine Ausarbeitung zum Thema sein: also Problemstellung/Ausprägung Input-Daten, Recherche/existierende Ansätze, eigner Lösungsansatz, auftretende Probleme/Iteration der Lösung, Testdaten/quantitative Evaluierung, Perspektive
-
-%% also weniger eine Dokumentation, die Doku wäre eher ein Appendix oder im Repository neben Code und Test anzusiedeln, die Doku sollte dann die in/out Schnittstellen Parameter dokumentieren, die Codebestandteile können zur Ausarbeitung referenziert werden
-
-%% 10 Seiten Ausarbeitung wäre gut
-
-%% der Algorithmus sollte auch als Diagramm visualisiert werden und die einzelnen Bestandteile im Text mit Referenz auf Code besprochen werden
-
-%% ihr habt ja von ca. 20 Freiheitsgraden gesprochen, diese sollten erläutert werden, Diskussion zukünftiger Ansätze/was wurde nicht untersucht
 
 \newpage
 
