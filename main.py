@@ -3,6 +3,7 @@ import cv2
 import os
 import configparser
 import sys
+import csv
 
 import numpy as np
 
@@ -113,13 +114,21 @@ def get_detected_faces(img, frontal_classifier, profile_classifier, config, path
 
     if faces_list:
         faces_path = path + '/faces/'
+        
         if not os.path.exists(faces_path):
             os.makedirs(faces_path)
+
         j = 0
         for (x, y, w, h) in faces_list:
             sub_face = img[y:y+h, x:x+w]
             cv2.imwrite(faces_path + name + '_' + str(j) + ".png", sub_face)
             j += 1
+
+        with open(faces_path + name + ".csv", 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=",")
+            writer.writerow(["x", "y", "width", "height"])
+            for row in faces_list:
+                writer.writerow(row)
 
         fd.mark_faces(img, faces_list)
 
@@ -165,6 +174,7 @@ def main(args, config):
 
             if not os.path.exists(args.result):
                 os.makedirs(args.result)
+
             cv2.imwrite(args.result + '/' + name + '_' + str(i) + '.png', img)
 
 

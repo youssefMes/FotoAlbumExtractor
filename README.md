@@ -1,6 +1,12 @@
-# Praktikum-Bildverarbeitung
+# Fotoalbum Extractor
 
-## Setup für die Entwicklung
+## Beschreibung
+
+Die hier entwickelte Software extrahiert aus einer eingescannten Fotoalbumseite die darin enthaltenen Fotos. Dazu sollte die Seite des Fotoalbums sauber eingescannt sein mit einem möglichst gleichfarbigen Hintergrund und ohne Spiegelungen. Die Fotos können einen Rahmen haben, der von dem Programm entfernt wird.
+Sobald die Fotos ausgeschnittenen wurden kann für jedes einzelne Foto innerhalb der Fotoalbumseite eine Gesichtserkennung durchgeführt werden, bei der die erkannten Gesichter markiert und ausgeschnitten werden.
+Um das Ergebnis der Software zu überprüfen soll es möglich sein die ausgeschnittenen Fotos mit Ground Truth Bildern auf Ähnlichkeit zu vergleichen. 
+
+## Setup für die Verwendung
 
 Das Projekt läuft mit:
 * Python 3.6.5 
@@ -13,20 +19,13 @@ Nach der Installation von Python kann man mit folgendem Befehl die Abhängigkeit
 pip install -r requirements.txt
 ```
 
-Das Projekt kann man dann mit folgendem Befehl ausführen:
+Das Projekt kann man dann mit folgendem Befehl ausführen sobald man in das Installtionsverzeichniss gewechselthat:
 
 ```
-python image_extractor
+python main.py /path/to/image.tif
 ```
 
-Falls man in der `PATH` Umgebungsvariable unter Windows den Ordner `Python\Scripts` hinterlegt hat kann man das Programm einrichten durch den Befehl:
-
+Eine Hilfe zur Ausführung des Progamms lässt sich wie folgt aufrufen:
 ```
-python setup.py develop
-```
-
-Danach kann man in der Konsole folgenden Befehl ausführen um das Programm auszuführen:
-
-```
-image_extractor 
+python main.py -h
 ```
