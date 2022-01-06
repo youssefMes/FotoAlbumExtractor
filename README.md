@@ -7,6 +7,7 @@ pipenv --three install #einmalig bei der ersten Installation
 ``` 
 2. Das Projekt starten
 ```shell
+pipenv shell 
 inv start
 ```
 Diese virtualle Umgebung stellt noch weitere Commands zur verfügung. Um diese zu sehen führen Sie inv help
