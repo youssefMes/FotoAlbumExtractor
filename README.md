@@ -10,4 +10,7 @@ pipenv --three install #einmalig bei der ersten Installation
 pipenv shell 
 inv start
 ```
-Diese virtualle Umgebung stellt noch weitere Commands zur verfügung. Um diese zu sehen führen Sie inv help
+Diese virtualle Umgebung stellt noch weitere Commands zur verfügung. Um diese zu sehen führen Sie 
+```shell
+inv help
+```
