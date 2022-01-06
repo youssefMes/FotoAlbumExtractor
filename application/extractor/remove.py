@@ -14,9 +14,7 @@ def get_primary_background_color(img):
 
     hist = cv2.calcHist([img], [0], None, [256], [0, 256])
     # get most occurring color
-    background_color = hist.argmax(axis=0)
-
-    return background_color
+    return hist.argmax(axis=0)[0]
 
 
 def get_background_spot(img, background_color, spot_size=200):
@@ -58,7 +56,7 @@ def generate_binary_background_image(img, background_color, threshold=25):
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret, mask1 = cv2.threshold(gray, background_color + threshold, 255, 0)
-    ret, mask2 = cv2.threshold(gray, background_color - threshold, 255, 0)
+    ret, mask2 = cv2.threshold(gray, background_color + threshold, 255, 0)
     combined = cv2.bitwise_not(cv2.bitwise_and(mask1, mask2))
 
     return combined
@@ -70,8 +68,8 @@ def separate_background(binary_background_img, background_location):
 
     :param binary_background_img: binary version of the image
     :param background_location: a location (x,y) where there is some background
-    :returns: binary image. 
-    :rtype: array  
+    :returns: binary image.
+    :rtype: array
     """
 
     im_floodfill = binary_background_img.copy()
@@ -93,8 +91,8 @@ def check_for_features(img, threshold=10):
 
     :param img: input image
     :param threshold: the necessary amount of features needed to be regarded as image
-    :returns: boolean, if image as enough features 
-    :rtype: bool  
+    :returns: boolean, if image as enough features
+    :rtype: bool
     """
 
     blur1 = cv2.GaussianBlur(img, (7, 7), 0)
@@ -120,17 +118,16 @@ def crop_image_rectangles(img, binary_background_image, min_area=-100, max_dimen
                                     (-> strips are not allowed)
     :param image_padding: the padding with which image is cut out of the original photo.
     :returns: an array of all the images in the scan
-    :rtype: array  
+    :rtype: array
     """
 
     # initialize output images
     cropped_images = []
-
-    im2, contours, hierarchy = cv2.findContours(binary_background_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(binary_background_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     album_image_height = binary_background_image.shape[0]
     album_image_width = binary_background_image.shape[1]
-    
+
     if min_area < 0:
         min_area = album_image_height * album_image_width / (-min_area)
 

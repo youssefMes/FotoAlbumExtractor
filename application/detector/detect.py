@@ -1,5 +1,48 @@
 import cv2
+import os
+import csv
 
+def get_detected_faces(img, frontal_classifier, profile_classifier, config, path, name):
+    """
+    Detects the faces in the cut out images, marks them in the resulting image with a green rectangle and saves them seperately.
+
+    :param img: ndarray - The image to detect faces.
+    :param frontal_classifier: The Casscade Classifier to detect frontal faces.
+    :param profile_classifier: The Casscade Classifier to detect faces in profile.
+    :param config: dictionary - The configuration of the config file.
+    :param path: Path to where the detected faces should be stored.
+    :param name: Notation of the current image.
+    :return:
+    """
+
+    scale = config.getfloat('FaceDetection', 'ScaleFactor')
+    neighbors = config.getint('FaceDetection', 'Neighbors')
+    if not scale or not neighbors:
+        sys.exit("Error in the config file!")
+
+    faces_list = detect_faces(img, frontal_classifier, profile_classifier, scale, neighbors)
+
+    if faces_list:
+        faces_path = path + '/faces/'
+
+        if not os.path.exists(faces_path):
+            os.makedirs(faces_path)
+
+        j = 0
+        for (x, y, w, h) in faces_list:
+            sub_face = img[y:y+h, x:x+w]
+            cv2.imwrite(faces_path + name + '_' + str(j) + ".png", sub_face)
+            j += 1
+
+        with open(faces_path + name + ".csv", 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=",")
+            writer.writerow(["x", "y", "width", "height"])
+            for row in faces_list:
+                writer.writerow(row)
+
+        mark_faces(img, faces_list)
+
+    return
 
 def detect_faces(img, frontal_classifier, profile_classifier, scale,
                  neighbors):

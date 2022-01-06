@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+docker-compose = ">=1.23.0"
+docker = "*"
+invoke = ">=1.4"
+colorama = {version = ">=0.4, <1"}
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

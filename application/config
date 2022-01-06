@@ -42,10 +42,10 @@ Offset = 4
 #----------------------------
 [FaceDetection]
 # path for the Haarcascade files for frontal faces
-CascadePathFrontal = ./imextract/cascade/haarcascade_frontalface.xml
+CascadePathFrontal = ./detector/cascade/haarcascade_frontalface.xml
 
 # path for the Haarcascade files for profile faces
-CascadePathProfile = ./imextract/cascade/haarcascade_profileface.xml
+CascadePathProfile = ./detector/cascade/haarcascade_profileface.xml
 
 # specifies how much the image size is reduced at each image scale
 ScaleFactor = 1.2
