@@ -24,8 +24,8 @@ def draw_image_with_boxes(img, result_list, name):
         x, y, width, height = result['box']
 
         #save img
-        sub_face = img[y:y+height, x:x+width]
-        cv2.imwrite(faces_path + name + '_' + str(j) + ".png", sub_face)
+        face = img[y:y+height, x:x+width]
+        cv2.imwrite(faces_path + name + '_' + str(j) + ".png", face)
         j += 1
 
         # create the shape
@@ -40,7 +40,6 @@ def draw_image_with_boxes(img, result_list, name):
 
     # show the plot
     #pyplot.show()
-    # Save the plot
     return pyplot
     
 
