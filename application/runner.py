@@ -1,3 +1,5 @@
+from mtcnn.mtcnn import MTCNN
+
 import argparse
 import configparser
 import cv2
@@ -6,6 +8,9 @@ import os
 import extractor.extract as extractor
 import detector.detect as detector
 import enhancer.enhance as enhancer
+import enhancer.mtcn_face as mtcn_face
+
+
 
 def main(args, config):
     """
@@ -44,12 +49,19 @@ def main(args, config):
                 frontal_classifier = cv2.CascadeClassifier(path_frontal_classifier)
                 profile_classifier = cv2.CascadeClassifier(path_profile_classifier)
 
-                detector.get_detected_faces(img, frontal_classifier, profile_classifier, config, args.result, name + '_' + str(i))
-
+                #detector.get_detected_faces(img, frontal_classifier, profile_classifier, config, args.result, name + '_' + str(i))
+                mtcnnDetector = MTCNN()
+                # detect faces in the image
+                faces = mtcnnDetector.detect_faces(img)
+                # display faces on the original image
+                pyplot = mtcn_face.draw_image_with_boxes(img, faces, name + '_' + str(i))
             if not os.path.exists(args.result):
                 os.makedirs(args.result)
 
-            cv2.imwrite(args.result + '/' + name + '_' + str(i) + '.png', img)
+            pyplot.savefig(args.result + '/' + name + '_' + str(i) + '.png', bbox_inches = 'tight', facecolor='white')
+            # show the plot
+            pyplot.show()
+            #cv2.imwrite(args.result + '/' + name + '_' + str(i) + '.png', img)
 
 
 if __name__ == "__main__":
