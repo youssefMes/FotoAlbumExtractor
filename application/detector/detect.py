@@ -1,6 +1,7 @@
 import cv2
 import os
 import csv
+from matplotlib import pyplot
 
 def get_detected_faces(img, frontal_classifier, profile_classifier, config, path, name):
     """
@@ -15,8 +16,8 @@ def get_detected_faces(img, frontal_classifier, profile_classifier, config, path
     :return:
     """
 
-    scale = config.getfloat('FaceDetection', 'ScaleFactor')
-    neighbors = config.getint('FaceDetection', 'Neighbors')
+    scale = 1.2
+    neighbors = 5
     if not scale or not neighbors:
         sys.exit("Error in the config file!")
 
@@ -25,20 +26,11 @@ def get_detected_faces(img, frontal_classifier, profile_classifier, config, path
     if faces_list:
         faces_path = path + '/faces/'
 
-        if not os.path.exists(faces_path):
-            os.makedirs(faces_path)
-
         j = 0
         for (x, y, w, h) in faces_list:
             sub_face = img[y:y+h, x:x+w]
-            cv2.imwrite(faces_path + name + '_' + str(j) + ".png", sub_face)
+            #cv2.imwrite(faces_path + name + '_' + str(j) + ".png", sub_face)
             j += 1
-
-        with open(faces_path + name + ".csv", 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter=",")
-            writer.writerow(["x", "y", "width", "height"])
-            for row in faces_list:
-                writer.writerow(row)
 
         mark_faces(img, faces_list)
 

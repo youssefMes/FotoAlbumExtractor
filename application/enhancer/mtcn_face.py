@@ -41,5 +41,5 @@ def draw_image_with_boxes(img, result_list, name):
     # show the plot
     #pyplot.show()
     return pyplot
-    
+
 

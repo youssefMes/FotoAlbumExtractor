@@ -1,6 +1,6 @@
 import cv2
-import extractor.remove as br
-import extractor.rectangle_extract as re
+import application.extractor.remove as br
+import application.extractor.rectangle_extract as re
 import numpy as np
 
 def get_background_extracted_images(img, config):
@@ -18,28 +18,29 @@ def get_background_extracted_images(img, config):
 
     background_color = br.get_primary_background_color(img)
 
-    spot_size = config.getint('BackgroundRemover', 'SpotSize')
+    spot_size = 200
+
     if not spot_size:
         sys.exit("Error in the config file!")
 
     background_location = br.get_background_spot(img, background_color, spot_size)
 
-    binary_threshold = config.getint('BackgroundRemover', 'BinaryThreshold')
+    binary_threshold = 25
     if not binary_threshold:
         sys.exit("Error in the config file!")
 
     binary_img = br.generate_binary_background_image(img, background_color, binary_threshold)
     binary_background_img = br.separate_background(binary_img, background_location)
 
-    min_area = config.getint('BackgroundRemover', 'MinImageSize')
-    max_dimension_relation = config.getfloat('BackgroundRemover', 'MaxRelationImageDimensions')
-    image_padding = config.getint('BackgroundRemover', 'ImagePadding')
+    min_area = -100
+    max_dimension_relation = 2.5
+    image_padding = 10
     if not min_area or not max_dimension_relation or not image_padding:
         sys.exit("Error in the config file!")
 
     cropped_images = br.crop_image_rectangles(img, binary_background_img)
 
-    feature_threshold = config.getint('BackgroundRemover', 'FeatureThreshold')
+    feature_threshold = 10
     if not feature_threshold:
         sys.exit("Error in the config file!")
 
@@ -57,9 +58,9 @@ def get_frame_extracted_image(img, config):
     :rtype ndarray.
     """
 
-    max_window_size = config.getfloat('ImageExtraction', 'MaxWindowSize')
-    steps = config.getint('ImageExtraction', 'Steps')
-    offset = config.getint('ImageExtraction', 'Offset')
+    max_window_size = 0.1
+    steps = 25
+    offset = 4
     if not max_window_size or not steps or not offset:
         sys.exit("Error in the config file!")
 

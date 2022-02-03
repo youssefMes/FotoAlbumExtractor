@@ -5,7 +5,6 @@ def enhance_image(img):
     return histogram_equalization(grayImg)
 
 def histogram_equalization(img):
-    #image = cv2.equalizeHist(img)
     clahe = cv2.createCLAHE(clipLimit=1.5, tileGridSize=(8, 8))
     equalized = clahe.apply(img)
     return cv2.cvtColor(equalized,cv2.COLOR_GRAY2RGB)
