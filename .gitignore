@@ -1,6 +1,6 @@
 # output file
 /output/
-/application/input
+/application/input/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
