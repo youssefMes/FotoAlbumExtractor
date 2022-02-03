@@ -34,7 +34,7 @@ def get_detected_faces(img, frontal_classifier, profile_classifier, config, path
 
         mark_faces(img, faces_list)
 
-    return faces_list
+    return len(faces_list)
 
 def detect_faces(img, frontal_classifier, profile_classifier, scale,
                  neighbors):
