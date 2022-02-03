@@ -14,3 +14,10 @@ Diese virtualle Umgebung stellt noch weitere Commands zur verfügung. Um diese z
 ```shell
 inv help
 ```
+
+### jupyter notebook
+1. Commmand Ausführen
+```shell
+jupyter notebook
+```
+2. Gui.ipynb öffnen
