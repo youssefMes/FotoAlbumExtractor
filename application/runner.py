@@ -39,16 +39,6 @@ def main(args, config):
                 print('enhance true')
                 img = enhancer.enhance_image(img)
             if args.face:
-
-                path_frontal_classifier = config.get('FaceDetection', 'CascadePathFrontal')
-                path_profile_classifier = config.get('FaceDetection', 'CascadePathProfile')
-
-                if not path_frontal_classifier or not path_profile_classifier:
-                    sys.exit("Error in the config file!")
-
-                frontal_classifier = cv2.CascadeClassifier(path_frontal_classifier)
-                profile_classifier = cv2.CascadeClassifier(path_profile_classifier)
-
                 #detector.get_detected_faces(img, frontal_classifier, profile_classifier, config, args.result, name + '_' + str(i))
                 mtcnnDetector = MTCNN()
                 # detect faces in the image
